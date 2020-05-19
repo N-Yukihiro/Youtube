@@ -1,6 +1,6 @@
 # Youtube
 
-Yukihiro NAKAJIMAのYoutube(https://www.youtube.com/channel/UCsgvpTZyI4Cgyv5Vv2CbBtA/videos?view_as=subscriber)で解説したRのコードを掲載します.
+Yukihiro NAKAJIMAの[Youtube](https://www.youtube.com/channel/UCsgvpTZyI4Cgyv5Vv2CbBtA/videos?view_as=subscriber) で解説したRのコードを掲載します.
 
 ## 前提
 `tidyverse`パッケージはインストール済みであることを前提とします.
