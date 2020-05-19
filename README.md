@@ -10,16 +10,10 @@ Yukihiro NAKAJIMAのYoutube([Link](https://www.youtube.com/channel/UCsgvpTZyI4Cg
 install.packages("tidyverse")  # 初回のみ
 ```
 
-## 公開するもの1
+## 公開するもの
 
 授業の回数に応じたR notebookを公開します．
 各自こちらのコードを参考に演習を進めてください．
-
-## 公開するもの2
-
-各回の授業スライドで用いた図表のソースコードを提示します.
-図表の意味をソースコードから理解したい方は確認してください.
-なお, 図表は基本的にtikz及びggplot2を用いて作成しています.
 
 ## フォルダ・ファイルのコピーの仕方
 
@@ -45,9 +39,8 @@ git2r::pull()
 
 ## フォルダ構成
 
-フォルダの構成としては, 各回の講義ごとにフォルダを作成します.
-各講義回の下層に`exercise`と`figure`のフォルダがあります(各回でR演習がなければ`exercise`フォルダがなく, 図表を用いなければ`figure`フォルダはありません).
+動画の公開年月に合わせたフォルダ構成になっています.
+適宜動画に沿ったnotebookを御覧ください.
 
-`exercise`は項目別にノートブックとしてまとまっており, `figure`はスライド内の図表番号と拡張子の前の数字が一致するようにしています.
-
-なにかわからないことがあれば担当者まで気軽にご連絡ください.
+誤りなどを見つけた際は, Googleのアンケートフォームからご指摘ください.
+(https://docs.google.com/forms/d/e/1FAIpQLSdfqhUQ2V91kXtS08raQjUr62Xyddkj4Vpd6TcOfAFzQ6HMyQ/viewform?usp=sf_link)
