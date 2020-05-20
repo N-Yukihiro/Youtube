@@ -104,7 +104,7 @@ log()関数は自然対数であり, 2を底とするときはlog2(), 10を底�
 ^は累乗, 10E04は10000をそれぞれ表しています.
 
 ```{r}
-exp(2) * 10 ^ 2 ;
+exp(2) * 10 ^ 2 
 sqrt(2) * 10E04
 log(2)
 ```
@@ -205,7 +205,7 @@ summary(f)
 
 ### データの書き出し
 
-hというデータフレームを作成し, write.csv()関数を利用して, dataフォルダにdata.csvというcsvファイルを作成してみましょう.
+gというデータフレームを作成し, write.csv()関数を利用して, dataフォルダにdata.csvというcsvファイルを作成してみましょう.
 
 seq()関数は等差数列を作る関数で, fromは初項, toは末項, byは公差, length.outは項数を表しています.
 
@@ -224,7 +224,7 @@ write.csv(g, here("data", "data.csv"),
 notebook上でdataというディレクトリを作成した場合(28行目)には, csvの書き出しの場所は以下のようにしてください.
 
 ```{r}
-write.csv(g, here("Lecture-02", "exercise", "data", "data.csv"), 
+write.csv(g, here("2020", "05", "data", "data.csv"), 
           quote=FALSE, row.names=FALSE)
 ```
 
@@ -240,7 +240,7 @@ dat1 <- read.csv(here("data", "data.csv"), header = TRUE)
 ```
 もしくは
 ```{r}
-dat1 <- read.csv(here("Lecture-02", "exercise", "data", "data.csv"), header = TRUE) 
+dat1 <- read.csv(here("2020", "05", "data", "data.csv"), header = TRUE) 
 ```
 
 最近増えてきているのは, readrパッケージに含まれるread_csv()関数です.
@@ -251,7 +251,7 @@ dat2 <- readr::read_csv(here("data", "data.csv"))
 ```
 もしくは
 ```{r}
-dat2 <- readr::read_csv(here("Lecture-02", "exercise", "data", "data.csv"))
+dat2 <- readr::read_csv(here("2020", "05", "data", "data.csv"))
 ```
 
 最後にdata.tableパッケージのfread()関数を紹介します.
@@ -266,7 +266,7 @@ dat3 <- data.table::fread(here("data", "data.csv"),
 ```
 もしくは
 ```{r}
-dat3 <- data.table::fread(here("Lecture-02", "exercise", "data", "data.csv"),
+dat3 <- data.table::fread(here("2020", "05", "data", "data.csv"),
                           data.table = FALSE)
 ```
 
@@ -280,9 +280,9 @@ system.time(data.table::fread(here("data", "data.csv")))
 ```
 もしくは
 ```{r}
-system.time(read.csv(here("Lecture-02", "exercise", "data", "data.csv")))
-system.time(readr::read_csv(here("Lecture-02", "exercise", "data", "data.csv")))
-system.time(data.table::fread(here("Lecture-02", "exercise", "data", "data.csv")))
+system.time(read.csv(here("2020", "05", "data", "data.csv")))
+system.time(readr::read_csv(here("2020", "05", "data", "data.csv")))
+system.time(data.table::fread(here("2020", "05", "data", "data.csv")))
 ```
 
 ### 文字コード
@@ -304,11 +304,11 @@ write.csv(dat2, here("data", "data.csv"),
 ```
 もしくは
 ```{r}
-dat1 <- read.csv(here("Lecture-02", "exercise", "data", "data.csv"), header = TRUE, 
+dat1 <- read.csv(here("2020", "05", "data", "data.csv"), header = TRUE, 
                  fileEncoding = "UTF8")
-dat2 <- readr::read_csv(here("Lecture-02", "exercise", "data", "data.csv"), 
+dat2 <- readr::read_csv(here("2020", "05", "data", "data.csv"), 
                         locale=locale(encoding="UTF8"))
-write.csv(dat2, here("Lecture-02", "exercise", "data", "data.csv"), 
+write.csv(dat2, here("2020", "05", "data", "data.csv"), 
           quote=FALSE, row.names=FALSE,
           fileEncoding = "UTF-8")
 ```
