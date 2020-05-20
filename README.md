@@ -43,4 +43,9 @@ git2r::pull()
 適宜動画に沿ったnotebookを御覧ください.
 
 誤りなどを見つけた際は, Googleのアンケートフォームからご指摘ください.
+
+通常版
+(https://docs.google.com/forms/d/e/1FAIpQLSfbdPxnJB1TThATfa_cfqzEn8FnpTCau6bmfTNztuQa0j_d_w/viewform?usp=sf_link)
+
+ファイル登録版(Googleでのログインが必要です)
 (https://docs.google.com/forms/d/e/1FAIpQLSdfqhUQ2V91kXtS08raQjUr62Xyddkj4Vpd6TcOfAFzQ6HMyQ/viewform?usp=sf_link)
