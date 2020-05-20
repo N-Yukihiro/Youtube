@@ -106,7 +106,7 @@ scales = "free"でx軸やy軸をそれぞれのカテゴリーに最適化しま
 ggplot(iris,
        aes(Petal.Length,
            ..density..,
-           fill = Species)) +z
+           fill = Species)) +
   geom_histogram() +
   geom_density(alpha = 0) + 
   facet_wrap(~Species,
