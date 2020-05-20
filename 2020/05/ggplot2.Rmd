@@ -1,0 +1,116 @@
+---
+title: "ggplot2 パッケージによる作図入門"
+output: html_notebook
+---
+
+### 重ね書きのイメージ
+
+ggplot2パッケージは重ね書きです.
+そのイメージを掴むために, 重ね書きのステップに分けてグラフを描いてみましょう.
+
+まずは, 下地を作ります.
+ggplot()関数で白(グレー)の下地を用意します.
+第一引数にプロットするデータを指定します(後で指定も可能).
+第二引数のmapping=aes()でどの列をx軸やy軸にプロットするのかを指定します.
+なお、dataやmapping,x,yは順番を変えなければ省略可能です.
+    
+```{r}
+library(ggplot2)
+ggplot(data = iris,
+       mapping = aes(
+         x = Petal.Length
+         )
+       )
+```
+
+次にヒストグラムを作成し, プロットします.
+ヒストグラムを追加するには用意した下地とgeom_histogram()を+でつなぎます.
+
+```{r}
+ggplot(data = iris,
+       mapping = aes(
+         x = Petal.Length
+         )) +
+  geom_histogram()
+```
+
+そして, 4行目にy = ..density..を追加し, y軸を割合に変更します.
+5行目にfill = "blue"を追加し, ヒストグラムに色を付けます.
+また, ヒストグラムを描画した図にgeom_density()で密度曲線を追加しましょう.
+引数のalphaは密度曲線の中の透明度を表します.
+今回は0%を指定して透明にしました.
+
+```{r}
+ggplot(data = iris,
+       mapping = aes(
+         x = Petal.Length,
+         y = ..density..)) +
+  geom_histogram(fill = "blue") +
+  geom_density(alpha = 0)
+```
+
+論文に載せやすいように背景は白くしましょう.
+theme_classic()で背景を白く, 重要でない線はなくすなど行います.
+
+```{r}
+ggplot(data = iris,
+       mapping = aes(
+         x = Petal.Length,
+         y = ..density..)) +
+  geom_histogram(fill = "blue") +
+  geom_density(alpha = 0) +
+  theme_classic()
+```
+
+最後にタイトルをつけます.
+タイトルはggtitle()で指定できます.
+タイトルの文字列はダブルクオーテーション(")で囲みます.
+RStudio Cloud上で日本語フォントを利用する方法は後述します.
+
+```{r}
+ggplot(data = iris,
+       mapping = aes(
+         x = Petal.Length,
+         y = ..density..)) +
+  geom_histogram(fill = "blue") +
+  geom_density(alpha = 0) +
+  theme_classic() +
+  ggtitle("histogram and density")
+```
+
+### 1枚のグラフにカテゴリーごとのヒストグラムを描く
+
+1枚のグラフにカテゴリーごとのヒストグラムを描いてみましょう.
+aes(fill= Category)とすることでカテゴリーごとに色分けができます.
+また, geom_histogram(position = "identity")とすると1つの図の中でカテゴリーごとにヒストグラムが描けます.
+
+```{r}
+ggplot(data = iris,
+       mapping = aes(
+         x = Petal.Length,
+         y = ..density..,
+         fill = Species)) +
+  geom_histogram(
+    position = "identity",
+    alpha = 0.5) +
+  geom_density(alpha = 0)
+```
+
+### 別々のグラフにカテゴリーごとのグラフを描く
+
+別々のグラフにカテゴリーごとのグラフを描いてみましょう.
+facet_wrap(~Category)とすることで, 別々の図にカテゴリーごとのヒストグラムを描けます.
+scales = "free"でx軸やy軸をそれぞれのカテゴリーに最適化します.
+
+```{r}
+ggplot(iris,
+       aes(Petal.Length,
+           ..density..,
+           fill = Species)) +z
+  geom_histogram() +
+  geom_density(alpha = 0) + 
+  facet_wrap(~Species,
+             scales = "free")
+```
+
+Enjoy!
