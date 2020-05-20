@@ -23,7 +23,7 @@ install.packages("tidyverse")  # 初回のみ
 ```
 install.packages("git2r")  # 初回のみ
 library(git2r) # 利用時は毎回
-url <- "https://github.com/N-Yukihiro/Statistics_YNU2020_exercise.git"
+url <- "https://github.com/N-Yukihiro/Youtube.git"
 clone(url = url,
       local_path = "exercise") # 初回のみ
 ```
