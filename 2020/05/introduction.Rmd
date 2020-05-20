@@ -55,9 +55,9 @@ install.packages("ggplot2")
 この作業はセッションを再開する度に必要です.
 
 ```{r}
-?library(dplyr)
-?library(readr)
-??library(ggplot2)
+library(dplyr)
+library(readr)
+library(ggplot2)
 ```
 
 ### `here`パッケージ
@@ -79,9 +79,9 @@ HELPの出し方は?を知りたい関数やパッケージ名の前につける
 ?を2個つける(??)と単語検索のように利用できます.
 
 ```{r eval=FALSE}
-library
-ggplot2
-dplyr
+?library
+?ggplot2
+??dplyr
 ```
 
 ### 四則演算
