@@ -23,6 +23,7 @@ quantile(iris$Sepal.Length)
 quantile()関数で, 0, .25, 0.5, 0.75 , 1に該当する値に赤線を重ねた.
 
 ```{r}
+
 ggplot(iris) +
   aes(x = Sepal.Length) +
   geom_boxplot() +
