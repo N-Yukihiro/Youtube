@@ -36,11 +36,9 @@ ggplot(iris) +
 
 箱ひげ図にどの程度データが分布しているかを確認するにはgeom_jitter()を加える.
 fill = Speciesとして, 種目別に箱ひげ図を描画する.
-reshape2パッケージとscale_fill_brewer()関数を利用して塗りつぶす色を変更.
+scale_fill_brewer()関数を利用して塗りつぶす色を変更.
 
 ```{r}
-install.packages("reshape2")
-library(reshape2)
 ggplot(iris) +
   aes(x = Sepal.Length,
       y = Species,

@@ -1755,10 +1755,9 @@ summary {
 <p>quantile()関数の引数としてprobs =で0～1の値を与えれば, 指定した割合に該当する数値を返す. また, 四分位数の求め方にはいくつかの方法があるため, どの手法を選択するのかをtype = で指定できる.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCA8LSAxOjlcbnF1YW50aWxlKHgpXG5xdWFudGlsZShpcmlzJFNlcGFsLkxlbmd0aClcbmBgYCJ9 -->
-<pre class="r"><code>x &lt;- 1:9
-quantile(x)
-quantile(iris$Sepal.Length)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxueCA8LSAxOjlcbnF1YW50aWxlKHgpXG5xdWFudGlsZShpcmlzJFNlcGFsLkxlbmd0aClcbmBgYFxuYGBgIn0= -->
+<p><code>r</code>r x &lt;- 1:9 quantile(x) quantile(iris$Sepal.Length)</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1768,32 +1767,21 @@ quantile(iris$Sepal.Length)</code></pre>
 <p>箱ひげ図を描画するには, geom_boxplot()を追加する. quantile()関数で, 0, .25, 0.5, 0.75 , 1に該当する値に赤線を重ねた.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGlyaXMpICtcbiAgYWVzKHggPSBTZXBhbC5MZW5ndGgpICtcbiAgZ2VvbV9ib3hwbG90KCkgK1xuICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSBxdWFudGlsZShpcmlzJFNlcGFsLkxlbmd0aCksXG4gICAgICAgICAgICAgY29sb3VyID0gXCJyZWRcIilcbmBgYCJ9 -->
-<pre class="r"><code>ggplot(iris) +
-  aes(x = Sepal.Length) +
-  geom_boxplot() +
-  geom_vline(xintercept = quantile(iris$Sepal.Length),
-             colour = &quot;red&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZ2dwbG90KGlyaXMpICtcbiAgYWVzKHggPSBTZXBhbC5MZW5ndGgpICtcbiAgZ2VvbV9ib3hwbG90KCkgK1xuICBnZW9tX3ZsaW5lKHhpbnRlcmNlcHQgPSBxdWFudGlsZShpcmlzJFNlcGFsLkxlbmd0aCksXG4gICAgICAgICAgICAgY29sb3VyID0gXFxyZWRcXClcbmBgYFxuYGBgIn0= -->
+<p><code>r</code>r ggplot(iris) + aes(x = Sepal.Length) + geom_boxplot() + geom_vline(xintercept = quantile(iris$Sepal.Length), colour = )</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
 <div id="箱ひげ図と分布" class="section level3">
 <h3>箱ひげ図と分布</h3>
-<p>箱ひげ図にどの程度データが分布しているかを確認するにはgeom_jitter()を加える. fill = Speciesとして, 種目別に箱ひげ図を描画する. reshape2パッケージとscale_fill_brewer()関数を利用して塗りつぶす色を変更.</p>
+<p>箱ひげ図にどの程度データが分布しているかを確認するにはgeom_jitter()を加える. fill = Speciesとして, 種目別に箱ひげ図を描画する. scale_fill_brewer()関数を利用して塗りつぶす色を変更.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5zdGFsbC5wYWNrYWdlcyhcInJlc2hhcGUyXCIpXG5saWJyYXJ5KHJlc2hhcGUyKVxuZ2dwbG90KGlyaXMpICtcbiAgYWVzKHggPSBTZXBhbC5MZW5ndGgsXG4gICAgICB5ID0gU3BlY2llcyxcbiAgICAgIGZpbGwgPSBTcGVjaWVzKSArXG4gIGdlb21fYm94cGxvdCgpICtcbiAgZ2VvbV9qaXR0ZXIoKSArXG4gIHNjYWxlX2ZpbGxfYnJld2VyKFxuICAgIHBhbGV0dGUgPSBcIlNldDJcIilcbmBgYCJ9 -->
-<pre class="r"><code>install.packages(&quot;reshape2&quot;)
-library(reshape2)
-ggplot(iris) +
-  aes(x = Sepal.Length,
-      y = Species,
-      fill = Species) +
-  geom_boxplot() +
-  geom_jitter() +
-  scale_fill_brewer(
-    palette = &quot;Set2&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuaW5zdGFsbC5wYWNrYWdlcyhcXHJlc2hhcGUyXFwpXG5saWJyYXJ5KHJlc2hhcGUyKVxuZ2dwbG90KGlyaXMpICtcbiAgYWVzKHggPSBTZXBhbC5MZW5ndGgsXG4gICAgICB5ID0gU3BlY2llcyxcbiAgICAgIGZpbGwgPSBTcGVjaWVzKSArXG4gIGdlb21fYm94cGxvdCgpICtcbiAgZ2VvbV9qaXR0ZXIoKSArXG4gIHNjYWxlX2ZpbGxfYnJld2VyKFxuICAgIHBhbGV0dGUgPSBcXFNldDJcXClcbmBgYFxuYGBgIn0= -->
+<p><code>r</code>r install.packages(2) library(reshape2) ggplot(iris) + aes(x = Sepal.Length, y = Species, fill = Species) + geom_boxplot() + geom_jitter() + scale_fill_brewer( palette = 2)</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1803,18 +1791,9 @@ ggplot(iris) +
 <p>箱ひげ図とヴァイオリンプロットを重ねることで視覚的な情報量を増やすこともできる. scale_fill_manual()関数を利用して塗りつぶす色を指定.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2dwbG90KGlyaXMpICtcbiAgYWVzKHggPSBTZXBhbC5MZW5ndGgsXG4gICAgICB5ID0gU3BlY2llcykgK1xuICBnZW9tX3Zpb2xpbihhZXMoXG4gICAgZmlsbCA9IFNwZWNpZXMpKSArXG4gIGdlb21fYm94cGxvdChhbHBoYSA9IDApICtcbiAgZ2VvbV9qaXR0ZXIoKSArXG4gIHNjYWxlX2ZpbGxfbWFudWFsKFxuICAgIHZhbHVlcyA9IGMoXCJyZWRcIiwgXG4gICAgICAgICAgICAgICBcImJsdWVcIixcbiAgICAgICAgICAgICAgIFwiZ3JlZW5cIikpXG5gYGAifQ== -->
-<pre class="r"><code>ggplot(iris) +
-  aes(x = Sepal.Length,
-      y = Species) +
-  geom_violin(aes(
-    fill = Species)) +
-  geom_boxplot(alpha = 0) +
-  geom_jitter() +
-  scale_fill_manual(
-    values = c(&quot;red&quot;, 
-               &quot;blue&quot;,
-               &quot;green&quot;))</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZ2dwbG90KGlyaXMpICtcbiAgYWVzKHggPSBTZXBhbC5MZW5ndGgsXG4gICAgICB5ID0gU3BlY2llcykgK1xuICBnZW9tX3Zpb2xpbihhZXMoXG4gICAgZmlsbCA9IFNwZWNpZXMpKSArXG4gIGdlb21fYm94cGxvdChhbHBoYSA9IDApICtcbiAgZ2VvbV9qaXR0ZXIoKSArXG4gIHNjYWxlX2ZpbGxfbWFudWFsKFxuICAgIHZhbHVlcyA9IGMoXFxyZWRcXCwgXG4gICAgICAgICAgICAgICBcXGJsdWVcXCxcbiAgICAgICAgICAgICAgIFxcZ3JlZW5cXCkpXG5gYGBcbmBgYCJ9 -->
+<p><code>r</code>r ggplot(iris) + aes(x = Sepal.Length, y = Species) + geom_violin(aes( fill = Species)) + geom_boxplot(alpha = 0) + geom_jitter() + scale_fill_manual( values = c(, , ))</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1824,9 +1803,9 @@ ggplot(iris) +
 <p>算術平均からの偏差の和が0になることを検証する. 数値計算上, 割り切れない場合はごく小さい値が算出されることもあることに注意.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3VtKHggLSBtZWFuKHgpKVxuc3VtKGlyaXMkU2VwYWwuTGVuZ3RoIC0gbWVhbihpcmlzJFNlcGFsLkxlbmd0aCkpXG5gYGAifQ== -->
-<pre class="r"><code>sum(x - mean(x))
-sum(iris$Sepal.Length - mean(iris$Sepal.Length))</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc3VtKHggLSBtZWFuKHgpKVxuc3VtKGlyaXMkU2VwYWwuTGVuZ3RoIC0gbWVhbihpcmlzJFNlcGFsLkxlbmd0aCkpXG5gYGBcbmBgYCJ9 -->
+<p><code>r</code>r sum(x - mean(x)) sum(iris<span class="math inline">\(Sepal.Length - mean(iris\)</span>Sepal.Length))</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1836,9 +1815,9 @@ sum(iris$Sepal.Length - mean(iris$Sepal.Length))</code></pre>
 <p>標本分散を求めるために各データから平均を引いて2乗し, その平均を取る. Rにデフォルトで搭載されているvar()関数は標本分散ではない(以降扱う不偏分散(<span class="math inline">\(n\)</span>ではなく, <span class="math inline">\(n-1\)</span>で除す)).</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWVhbigoeCAtIG1lYW4oeCkpXjIpXG52YXIoeClcbmBgYCJ9 -->
-<pre class="r"><code>mean((x - mean(x))^2)
-var(x)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubWVhbigoeCAtIG1lYW4oeCkpXjIpXG52YXIoeClcbmBgYFxuYGBgIn0= -->
+<p><code>r</code>r mean((x - mean(x))^2) var(x)</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1848,9 +1827,9 @@ var(x)</code></pre>
 <p>標本標準偏差を求めるために各データから平均を引いた値の平方平均の平方根を求める(標本分散の平方根を求める). Rにデフォルトで搭載されているsd()関数は標本標準偏差ではない(以降扱う不偏標準偏差(不偏分散の平方根)).</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2Vld2F2ZTo6cm1zKHggLSBtZWFuKHgpKVxuc2QoeClcbmBgYCJ9 -->
-<pre class="r"><code>seewave::rms(x - mean(x))
-sd(x)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2Vld2F2ZTo6cm1zKHggLSBtZWFuKHgpKVxuc2QoeClcbmBgYFxuYGBgIn0= -->
+<p><code>r</code>r seewave::rms(x - mean(x)) sd(x)</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1860,8 +1839,9 @@ sd(x)</code></pre>
 <p>データを標準化するにはscale()関数を利用する. 出力結果は少し厄介.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2NhbGUoeClcbmBgYCJ9 -->
-<pre class="r"><code>scale(x)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2NhbGUoeClcbmBgYFxuYGBgIn0= -->
+<p><code>r</code>r scale(x)</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1871,11 +1851,9 @@ sd(x)</code></pre>
 <p>データから平均を引き, 標準偏差を除す. scale()関数は不偏標準偏差で除していることがわかる.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuejEgPC0gKHggLSBtZWFuKHgpKSAvIHNlZXdhdmU6OnJtcyh4IC0gbWVhbih4KSlcbnoxXG56MiA8LSAoeCAtIG1lYW4oeCkpIC8gc2QoeClcbnoyXG5gYGAifQ== -->
-<pre class="r"><code>z1 &lt;- (x - mean(x)) / seewave::rms(x - mean(x))
-z1
-z2 &lt;- (x - mean(x)) / sd(x)
-z2</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuejEgPC0gKHggLSBtZWFuKHgpKSAvIHNlZXdhdmU6OnJtcyh4IC0gbWVhbih4KSlcbnoxXG56MiA8LSAoeCAtIG1lYW4oeCkpIC8gc2QoeClcbnoyXG5gYGBcbmBgYCJ9 -->
+<p><code>r</code>r z1 &lt;- (x - mean(x)) / seewave::rms(x - mean(x)) z1 z2 &lt;- (x - mean(x)) / sd(x) z2</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1885,16 +1863,14 @@ z2</code></pre>
 <p>数値に若干の違いはあるが, 平均0, 分散1という性質は変わらない.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWVhbih6MSlcbnNlZXdhdmU6OnJtcyh6MSAtIG1lYW4oejEpKVxubWVhbih6MilcbnNkKHoyKVxuYGBgIn0= -->
-<pre class="r"><code>mean(z1)
-seewave::rms(z1 - mean(z1))
-mean(z2)
-sd(z2)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubWVhbih6MSlcbnNlZXdhdmU6OnJtcyh6MSAtIG1lYW4oejEpKVxubWVhbih6MilcbnNkKHoyKVxuYGBgXG5gYGAifQ== -->
+<p><code>r</code>r mean(z1) seewave::rms(z1 - mean(z1)) mean(z2) sd(z2)</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAi44OH44O844K/44Gu44Gw44KJ44Gk44GNIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgojIyMg5Zub5YiG5L2N5pWwCgrlm5vliIbkvY3mlbDlj4rjgbPmnIDlpKflgKTmnIDlsI/lgKTjga9zdW1tYXJ5KCnplqLmlbAo5YmN6L+wKeOChHF1YW50aWxlKCnplqLmlbDjgpLnlKjjgYTjgabmsYLjgoHjgovjgZPjgajjgYzjgafjgY3jgosuCnF1YW50aWxlKCnplqLmlbDjgoLjg4fjg7zjgr/jg5Xjg6zjg7zjg6DjgpLlvJXmlbDjgavjgajjgovjgZPjgajjga/jgafjgY3jgarjgYQuCgpxdWFudGlsZSgp6Zai5pWw44Gu5byV5pWw44Go44GX44GmcHJvYnMgPeOBpzDvvZ4x44Gu5YCk44KS5LiO44GI44KM44GwLCDmjIflrprjgZfjgZ/libLlkIjjgavoqbLlvZPjgZnjgovmlbDlgKTjgpLov5TjgZkuCuOBvuOBnywg5Zub5YiG5L2N5pWw44Gu5rGC44KB5pa544Gr44Gv44GE44GP44Gk44GL44Gu5pa55rOV44GM44GC44KL44Gf44KBLCDjganjga7miYvms5XjgpLpgbjmip7jgZnjgovjga7jgYvjgpJ0eXBlID0g44Gn5oyH5a6a44Gn44GN44KLLgoKYGBge3J9CnggPC0gMTo5CnF1YW50aWxlKHgpCnF1YW50aWxlKGlyaXMkU2VwYWwuTGVuZ3RoKQpgYGAKCiMjIyDnrrHjgbLjgZLlm7MKCueuseOBsuOBkuWbs+OCkuaPj+eUu+OBmeOCi+OBq+OBrywgZ2VvbV9ib3hwbG90KCnjgpLov73liqDjgZnjgosuCnF1YW50aWxlKCnplqLmlbDjgacsIDAsIC4yNSwgMC41LCAwLjc1ICwgMeOBq+ipsuW9k+OBmeOCi+WApOOBq+i1pOe3muOCkumHjeOBreOBny4KCmBgYHtyfQpnZ3Bsb3QoaXJpcykgKwogIGFlcyh4ID0gU2VwYWwuTGVuZ3RoKSArCiAgZ2VvbV9ib3hwbG90KCkgKwogIGdlb21fdmxpbmUoeGludGVyY2VwdCA9IHF1YW50aWxlKGlyaXMkU2VwYWwuTGVuZ3RoKSwKICAgICAgICAgICAgIGNvbG91ciA9ICJyZWQiKQpgYGAKCgojIyMg566x44Gy44GS5Zuz44Go5YiG5biDCgrnrrHjgbLjgZLlm7Pjgavjganjga7nqIvluqbjg4fjg7zjgr/jgYzliIbluIPjgZfjgabjgYTjgovjgYvjgpLnorroqo3jgZnjgovjgavjga9nZW9tX2ppdHRlcigp44KS5Yqg44GI44KLLgpmaWxsID0gU3BlY2llc+OBqOOBl+OBpiwg56iu55uu5Yil44Gr566x44Gy44GS5Zuz44KS5o+P55S744GZ44KLLgpyZXNoYXBlMuODkeODg+OCseODvOOCuOOBqHNjYWxlX2ZpbGxfYnJld2VyKCnplqLmlbDjgpLliKnnlKjjgZfjgabloZfjgorjgaTjgbbjgZnoibLjgpLlpInmm7QuCgpgYGB7cn0KaW5zdGFsbC5wYWNrYWdlcygicmVzaGFwZTIiKQpsaWJyYXJ5KHJlc2hhcGUyKQpnZ3Bsb3QoaXJpcykgKwogIGFlcyh4ID0gU2VwYWwuTGVuZ3RoLAogICAgICB5ID0gU3BlY2llcywKICAgICAgZmlsbCA9IFNwZWNpZXMpICsKICBnZW9tX2JveHBsb3QoKSArCiAgZ2VvbV9qaXR0ZXIoKSArCiAgc2NhbGVfZmlsbF9icmV3ZXIoCiAgICBwYWxldHRlID0gIlNldDIiKQpgYGAKCiMjIyDnrrHjgbLjgZLlm7Pjgajjg7TjgqHjgqTjgqrjg6rjg7Pjg5fjg63jg4Pjg4gKCueuseOBsuOBkuWbs+OBqOODtOOCoeOCpOOCquODquODs+ODl+ODreODg+ODiOOCkumHjeOBreOCi+OBk+OBqOOBp+imluimmueahOOBquaDheWgsemHj+OCkuWil+OChOOBmeOBk+OBqOOCguOBp+OBjeOCiy4Kc2NhbGVfZmlsbF9tYW51YWwoKemWouaVsOOCkuWIqeeUqOOBl+OBpuWhl+OCiuOBpOOBtuOBmeiJsuOCkuaMh+Wumi4KCmBgYHtyfQpnZ3Bsb3QoaXJpcykgKwogIGFlcyh4ID0gU2VwYWwuTGVuZ3RoLAogICAgICB5ID0gU3BlY2llcykgKwogIGdlb21fdmlvbGluKGFlcygKICAgIGZpbGwgPSBTcGVjaWVzKSkgKwogIGdlb21fYm94cGxvdChhbHBoYSA9IDApICsKICBnZW9tX2ppdHRlcigpICsKICBzY2FsZV9maWxsX21hbnVhbCgKICAgIHZhbHVlcyA9IGMoInJlZCIsIAogICAgICAgICAgICAgICAiYmx1ZSIsCiAgICAgICAgICAgICAgICJncmVlbiIpKQpgYGAKCiMjIyDnrpfooZPlubPlnYfjgYvjgonjga7lgY/lt67jga7lkowKCueul+ihk+W5s+Wdh+OBi+OCieOBruWBj+W3ruOBruWSjOOBjDDjgavjgarjgovjgZPjgajjgpLmpJzoqLzjgZnjgosuCuaVsOWApOioiOeul+S4iiwg5Ymy44KK5YiH44KM44Gq44GE5aC05ZCI44Gv44GU44GP5bCP44GV44GE5YCk44GM566X5Ye644GV44KM44KL44GT44Go44KC44GC44KL44GT44Go44Gr5rOo5oSPLgoKYGBge3J9CnN1bSh4IC0gbWVhbih4KSkKc3VtKGlyaXMkU2VwYWwuTGVuZ3RoIC0gbWVhbihpcmlzJFNlcGFsLkxlbmd0aCkpCmBgYAoKIyMjIOaomeacrOWIhuaVowoK5qiZ5pys5YiG5pWj44KS5rGC44KB44KL44Gf44KB44Gr5ZCE44OH44O844K/44GL44KJ5bmz5Z2H44KS5byV44GE44GmMuS5l+OBlywg44Gd44Gu5bmz5Z2H44KS5Y+W44KLLgpS44Gr44OH44OV44Kp44Or44OI44Gn5pCt6LyJ44GV44KM44Gm44GE44KLdmFyKCnplqLmlbDjga/mqJnmnKzliIbmlaPjgafjga/jgarjgYQo5Lul6ZmN5omx44GG5LiN5YGP5YiG5pWjKCRuJOOBp+OBr+OBquOBjywgJG4tMSTjgafpmaTjgZkpKS4KCmBgYHtyfQptZWFuKCh4IC0gbWVhbih4KSleMikKdmFyKHgpCmBgYAoKIyMjIOaomeacrOaomea6luWBj+W3rgoK5qiZ5pys5qiZ5rqW5YGP5beu44KS5rGC44KB44KL44Gf44KB44Gr5ZCE44OH44O844K/44GL44KJ5bmz5Z2H44KS5byV44GE44Gf5YCk44Gu5bmz5pa55bmz5Z2H44Gu5bmz5pa55qC544KS5rGC44KB44KLKOaomeacrOWIhuaVo+OBruW5s+aWueagueOCkuaxguOCgeOCiykuClLjgavjg4fjg5Xjgqnjg6vjg4jjgafmkK3ovInjgZXjgozjgabjgYTjgotzZCgp6Zai5pWw44Gv5qiZ5pys5qiZ5rqW5YGP5beu44Gn44Gv44Gq44GEKOS7pemZjeaJseOBhuS4jeWBj+aomea6luWBj+W3rijkuI3lgY/liIbmlaPjga7lubPmlrnmoLkpKS4KCmBgYHtyfQpzZWV3YXZlOjpybXMoeCAtIG1lYW4oeCkpCnNkKHgpCmBgYAoKIyMjIOODh+ODvOOCv+OBruaomea6luWMlgoK44OH44O844K/44KS5qiZ5rqW5YyW44GZ44KL44Gr44Gvc2NhbGUoKemWouaVsOOCkuWIqeeUqOOBmeOCiy4K5Ye65Yqb57WQ5p6c44Gv5bCR44GX5Y6E5LuLLgoKYGBge3J9CnNjYWxlKHgpCmBgYAoKIyMjIOWumue+qeOBq+W+k+OBo+OBpuaomea6luWMluOBmeOCiwoK44OH44O844K/44GL44KJ5bmz5Z2H44KS5byV44GNLCDmqJnmupblgY/lt67jgpLpmaTjgZkuCnNjYWxlKCnplqLmlbDjga/kuI3lgY/mqJnmupblgY/lt67jgafpmaTjgZfjgabjgYTjgovjgZPjgajjgYzjgo/jgYvjgosuCgpgYGB7cn0KejEgPC0gKHggLSBtZWFuKHgpKSAvIHNlZXdhdmU6OnJtcyh4IC0gbWVhbih4KSkKejEKejIgPC0gKHggLSBtZWFuKHgpKSAvIHNkKHgpCnoyCmBgYAoKIyMjIOaomea6luWMluWkiemHj+OBruWkieaPm+azleOBrumBleOBhAoK5pWw5YCk44Gr6Iul5bmy44Gu6YGV44GE44Gv44GC44KL44GMLCDlubPlnYcwLCDliIbmlaMx44Go44GE44GG5oCn6LOq44Gv5aSJ44KP44KJ44Gq44GELgoKYGBge3J9Cm1lYW4oejEpCnNlZXdhdmU6OnJtcyh6MSAtIG1lYW4oejEpKQptZWFuKHoyKQpzZCh6MikKYGBg</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAi44OH44O844K/44Gu44Gw44KJ44Gk44GNIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgojIyMg5Zub5YiG5L2N5pWwCgrlm5vliIbkvY3mlbDlj4rjgbPmnIDlpKflgKTmnIDlsI/lgKTjga9zdW1tYXJ5KCnplqLmlbAo5YmN6L+wKeOChHF1YW50aWxlKCnplqLmlbDjgpLnlKjjgYTjgabmsYLjgoHjgovjgZPjgajjgYzjgafjgY3jgosuCnF1YW50aWxlKCnplqLmlbDjgoLjg4fjg7zjgr/jg5Xjg6zjg7zjg6DjgpLlvJXmlbDjgavjgajjgovjgZPjgajjga/jgafjgY3jgarjgYQuCgpxdWFudGlsZSgp6Zai5pWw44Gu5byV5pWw44Go44GX44GmcHJvYnMgPeOBpzDvvZ4x44Gu5YCk44KS5LiO44GI44KM44GwLCDmjIflrprjgZfjgZ/libLlkIjjgavoqbLlvZPjgZnjgovmlbDlgKTjgpLov5TjgZkuCuOBvuOBnywg5Zub5YiG5L2N5pWw44Gu5rGC44KB5pa544Gr44Gv44GE44GP44Gk44GL44Gu5pa55rOV44GM44GC44KL44Gf44KBLCDjganjga7miYvms5XjgpLpgbjmip7jgZnjgovjga7jgYvjgpJ0eXBlID0g44Gn5oyH5a6a44Gn44GN44KLLgoKYGBge3J9CnggPC0gMTo5CnF1YW50aWxlKHgpCnF1YW50aWxlKGlyaXMkU2VwYWwuTGVuZ3RoKQpgYGAKCiMjIyDnrrHjgbLjgZLlm7MKCueuseOBsuOBkuWbs+OCkuaPj+eUu+OBmeOCi+OBq+OBrywgZ2VvbV9ib3hwbG90KCnjgpLov73liqDjgZnjgosuCnF1YW50aWxlKCnplqLmlbDjgacsIDAsIC4yNSwgMC41LCAwLjc1ICwgMeOBq+ipsuW9k+OBmeOCi+WApOOBq+i1pOe3muOCkumHjeOBreOBny4KCmBgYHtyfQpsaWJyYXJ5KGdncGxvdDIpCmdncGxvdChpcmlzKSArCiAgYWVzKHggPSBTZXBhbC5MZW5ndGgpICsKICBnZW9tX2JveHBsb3QoKSArCiAgZ2VvbV92bGluZSh4aW50ZXJjZXB0ID0gcXVhbnRpbGUoaXJpcyRTZXBhbC5MZW5ndGgpLAogICAgICAgICAgICAgY29sb3VyID0gInJlZCIpCmBgYAoKCiMjIyDnrrHjgbLjgZLlm7PjgajliIbluIMKCueuseOBsuOBkuWbs+OBq+OBqeOBrueoi+W6puODh+ODvOOCv+OBjOWIhuW4g+OBl+OBpuOBhOOCi+OBi+OCkueiuuiqjeOBmeOCi+OBq+OBr2dlb21faml0dGVyKCnjgpLliqDjgYjjgosuCmZpbGwgPSBTcGVjaWVz44Go44GX44GmLCDnqK7nm67liKXjgavnrrHjgbLjgZLlm7PjgpLmj4/nlLvjgZnjgosuCnNjYWxlX2ZpbGxfYnJld2VyKCnplqLmlbDjgpLliKnnlKjjgZfjgabloZfjgorjgaTjgbbjgZnoibLjgpLlpInmm7QuCgpgYGB7cn0KZ2dwbG90KGlyaXMpICsKICBhZXMoeCA9IFNlcGFsLkxlbmd0aCwKICAgICAgeSA9IFNwZWNpZXMsCiAgICAgIGZpbGwgPSBTcGVjaWVzKSArCiAgZ2VvbV9ib3hwbG90KCkgKwogIGdlb21faml0dGVyKCkgKwogIHNjYWxlX2ZpbGxfYnJld2VyKAogICAgcGFsZXR0ZSA9ICJTZXQyIikKYGBgCgojIyMg566x44Gy44GS5Zuz44Go44O044Kh44Kk44Kq44Oq44Oz44OX44Ot44OD44OICgrnrrHjgbLjgZLlm7Pjgajjg7TjgqHjgqTjgqrjg6rjg7Pjg5fjg63jg4Pjg4jjgpLph43jga3jgovjgZPjgajjgafoppbopprnmoTjgarmg4XloLHph4/jgpLlopfjgoTjgZnjgZPjgajjgoLjgafjgY3jgosuCnNjYWxlX2ZpbGxfbWFudWFsKCnplqLmlbDjgpLliKnnlKjjgZfjgabloZfjgorjgaTjgbbjgZnoibLjgpLmjIflrpouCgpgYGB7cn0KZ2dwbG90KGlyaXMpICsKICBhZXMoeCA9IFNlcGFsLkxlbmd0aCwKICAgICAgeSA9IFNwZWNpZXMpICsKICBnZW9tX3Zpb2xpbihhZXMoCiAgICBmaWxsID0gU3BlY2llcykpICsKICBnZW9tX2JveHBsb3QoYWxwaGEgPSAwKSArCiAgZ2VvbV9qaXR0ZXIoKSArCiAgc2NhbGVfZmlsbF9tYW51YWwoCiAgICB2YWx1ZXMgPSBjKCJyZWQiLCAKICAgICAgICAgICAgICAgImJsdWUiLAogICAgICAgICAgICAgICAiZ3JlZW4iKSkKYGBgCgojIyMg566X6KGT5bmz5Z2H44GL44KJ44Gu5YGP5beu44Gu5ZKMCgrnrpfooZPlubPlnYfjgYvjgonjga7lgY/lt67jga7lkozjgYww44Gr44Gq44KL44GT44Go44KS5qSc6Ki844GZ44KLLgrmlbDlgKToqIjnrpfkuIosIOWJsuOCiuWIh+OCjOOBquOBhOWgtOWQiOOBr+OBlOOBj+Wwj+OBleOBhOWApOOBjOeul+WHuuOBleOCjOOCi+OBk+OBqOOCguOBguOCi+OBk+OBqOOBq+azqOaEjy4KCmBgYHtyfQpzdW0oeCAtIG1lYW4oeCkpCnN1bShpcmlzJFNlcGFsLkxlbmd0aCAtIG1lYW4oaXJpcyRTZXBhbC5MZW5ndGgpKQpgYGAKCiMjIyDmqJnmnKzliIbmlaMKCuaomeacrOWIhuaVo+OCkuaxguOCgeOCi+OBn+OCgeOBq+WQhOODh+ODvOOCv+OBi+OCieW5s+Wdh+OCkuW8leOBhOOBpjLkuZfjgZcsIOOBneOBruW5s+Wdh+OCkuWPluOCiy4KUuOBq+ODh+ODleOCqeODq+ODiOOBp+aQrei8ieOBleOCjOOBpuOBhOOCi3Zhcigp6Zai5pWw44Gv5qiZ5pys5YiG5pWj44Gn44Gv44Gq44GEKOS7pemZjeaJseOBhuS4jeWBj+WIhuaVoygkbiTjgafjga/jgarjgY8sICRuLTEk44Gn6Zmk44GZKSkuCgpgYGB7cn0KbWVhbigoeCAtIG1lYW4oeCkpXjIpCnZhcih4KQpgYGAKCiMjIyDmqJnmnKzmqJnmupblgY/lt64KCuaomeacrOaomea6luWBj+W3ruOCkuaxguOCgeOCi+OBn+OCgeOBq+WQhOODh+ODvOOCv+OBi+OCieW5s+Wdh+OCkuW8leOBhOOBn+WApOOBruW5s+aWueW5s+Wdh+OBruW5s+aWueagueOCkuaxguOCgeOCiyjmqJnmnKzliIbmlaPjga7lubPmlrnmoLnjgpLmsYLjgoHjgospLgpS44Gr44OH44OV44Kp44Or44OI44Gn5pCt6LyJ44GV44KM44Gm44GE44KLc2QoKemWouaVsOOBr+aomeacrOaomea6luWBj+W3ruOBp+OBr+OBquOBhCjku6XpmY3mibHjgYbkuI3lgY/mqJnmupblgY/lt64o5LiN5YGP5YiG5pWj44Gu5bmz5pa55qC5KSkuCgpgYGB7cn0Kc2Vld2F2ZTo6cm1zKHggLSBtZWFuKHgpKQpzZCh4KQpgYGAKCiMjIyDjg4fjg7zjgr/jga7mqJnmupbljJYKCuODh+ODvOOCv+OCkuaomea6luWMluOBmeOCi+OBq+OBr3NjYWxlKCnplqLmlbDjgpLliKnnlKjjgZnjgosuCuWHuuWKm+e1kOaenOOBr+WwkeOBl+WOhOS7iy4KCmBgYHtyfQpzY2FsZSh4KQpgYGAKCiMjIyDlrprnvqnjgavlvpPjgaPjgabmqJnmupbljJbjgZnjgosKCuODh+ODvOOCv+OBi+OCieW5s+Wdh+OCkuW8leOBjSwg5qiZ5rqW5YGP5beu44KS6Zmk44GZLgpzY2FsZSgp6Zai5pWw44Gv5LiN5YGP5qiZ5rqW5YGP5beu44Gn6Zmk44GX44Gm44GE44KL44GT44Go44GM44KP44GL44KLLgoKYGBge3J9CnoxIDwtICh4IC0gbWVhbih4KSkgLyBzZWV3YXZlOjpybXMoeCAtIG1lYW4oeCkpCnoxCnoyIDwtICh4IC0gbWVhbih4KSkgLyBzZCh4KQp6MgpgYGAKCiMjIyDmqJnmupbljJblpInph4/jga7lpInmj5vms5Xjga7pgZXjgYQKCuaVsOWApOOBq+iLpeW5suOBrumBleOBhOOBr+OBguOCi+OBjCwg5bmz5Z2HMCwg5YiG5pWjMeOBqOOBhOOBhuaAp+izquOBr+WkieOCj+OCieOBquOBhC4KCmBgYHtyfQptZWFuKHoxKQpzZWV3YXZlOjpybXMoejEgLSBtZWFuKHoxKSkKbWVhbih6MikKc2QoejIpCmBgYAo=</div>
 
 
 
