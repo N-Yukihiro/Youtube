@@ -1754,28 +1754,23 @@ summary {
 <p>パイプ演算子を利用して実際に平均の算出を行う. 総和を求めるためにsum()関数を, 割り算を行うためにmagrittrパッケージのdivide_by()関数を利用する. divide_by()関数の第1引数に割られる数を, 第2引数に割る数を指定する.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMg44OR44Kk44OX44KS5L2/44KP44Gq44GE5L6LXG5tYWdyaXR0cjo6ZGl2aWRlX2J5KHN1bSh4KSwgbilcblxuYGBgIn0= -->
-<pre class="r"><code>## パイプを使わない例
-magrittr::divide_by(sum(x), n)
-</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShtYWdyaXR0cilcbnggPC0gMToxMFxubiA8LSAxMFxuIyMg44OR44Kk44OX44KS5L2/44KP44Gq44GE5L6LXG5tYWdyaXR0cjo6ZGl2aWRlX2J5KHN1bSh4KSwgbilcbmBgYCJ9 -->
+<pre class="r"><code>library(magrittr)
+x &lt;- 1:10
+n &lt;- 10
+## パイプを使わない例
+magrittr::divide_by(sum(x), n)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDUuNVxuIn0= -->
-<pre><code>[1] 5.5</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>パイプ演算子を利用しない場合と比較して, どういう過程を経たいのかが明確になっている</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMg44OR44Kk44OX44KS5Yip55So44GX44Gf5L6LXG5zdW0oeCkgJT4lIFxuICBkaXZpZGVfYnkobilcblxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMg44OR44Kk44OX44KS5Yip55So44GX44Gf5L6LXG5zdW0oeCkgJT4lIFxuICBkaXZpZGVfYnkobilcbmBgYCJ9 -->
 <pre class="r"><code>## パイプを利用した例
 sum(x) %&gt;% 
-  divide_by(n)
-</code></pre>
+  divide_by(n)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDUuNVxuIn0= -->
-<pre><code>[1] 5.5</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1784,30 +1779,22 @@ sum(x) %&gt;%
 <p>パイプ演算子を利用する場合, コードの始点に利用するデータ自体を書くこともできる.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCAlPiUgXG4gIHN1bSgpICU+JSBcbiAgZGl2aWRlX2J5KG4pXG5cbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCAlPiUgXG4gIHN1bSgpICU+JSBcbiAgZGl2aWRlX2J5KG4pXG5gYGAifQ== -->
 <pre class="r"><code>x %&gt;% 
   sum() %&gt;% 
-  divide_by(n)
-</code></pre>
+  divide_by(n)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDUuNVxuIn0= -->
-<pre><code>[1] 5.5</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>関数の中でパイプ演算子を利用することもできる.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCAlPiUgXG4gIHN1bSgpICU+JSBcbiAgZGl2aWRlX2J5KHggJT4lIFxuICAgICAgICAgICAgICBsZW5ndGgoKSlcblxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCAlPiUgXG4gIHN1bSgpICU+JSBcbiAgZGl2aWRlX2J5KHggJT4lIFxuICAgICAgICAgICAgICBsZW5ndGgoKSlcbmBgYCJ9 -->
 <pre class="r"><code>x %&gt;% 
   sum() %&gt;% 
   divide_by(x %&gt;% 
-              length())
-</code></pre>
+              length())</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDUuNVxuIn0= -->
-<pre><code>[1] 5.5</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1817,16 +1804,12 @@ sum(x) %&gt;%
 <p>しかし, それ以外のパッケージに含まれる関数では, 第2引数以降にデータを指定することもある. そのままではパイプ演算子が使えない. 第2引数以降にデータを渡すには, データを渡したい場所に.を記す.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCAlPiUgXG4gIGxlbmd0aCgpICU+JSBcbiAgZGl2aWRlX2J5KHN1bSh4KSxcbiAgICAgICAgICAgIC4pXG5cbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueCAlPiUgXG4gIGxlbmd0aCgpICU+JSBcbiAgZGl2aWRlX2J5KHN1bSh4KSxcbiAgICAgICAgICAgIC4pXG5gYGAifQ== -->
 <pre class="r"><code>x %&gt;% 
   length() %&gt;% 
   divide_by(sum(x),
-            .)
-</code></pre>
+            .)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDUuNVxuIn0= -->
-<pre><code>[1] 5.5</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1835,23 +1818,11 @@ sum(x) %&gt;%
 <p>回帰分析を行うlm()関数などでは, .の違う利用法が定義されている. 第1引数の中で使われている.は応答変数以外の変数を説明変数に投入することを意図している. 第2引数の中では, パイプ演算子で受け取ったデータをどこに渡すのかを表している. どのような意図で.を書いているのかに注意!</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlPiUgXG4gIGxtKGZvcm11bGEgPSBQZXRhbC5MZW5ndGggfiAuLFxuICAgICBkYXRhID0gLilcblxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlPiUgXG4gIGxtKGZvcm11bGEgPSBQZXRhbC5MZW5ndGggfiAuLFxuICAgICBkYXRhID0gLilcbmBgYCJ9 -->
 <pre class="r"><code>iris %&gt;% 
   lm(formula = Petal.Length ~ .,
-     data = .)
-</code></pre>
+     data = .)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5DYWxsOlxubG0oZm9ybXVsYSA9IFBldGFsLkxlbmd0aCB+IC4sIGRhdGEgPSAuKVxuXG5Db2VmZmljaWVudHM6XG4gICAgICAoSW50ZXJjZXB0KSAgICAgICBTZXBhbC5MZW5ndGggICAgICAgIFNlcGFsLldpZHRoICAgICAgICBQZXRhbC5XaWR0aCAgXG4gICAgICAgICAgLTEuMTExMCAgICAgICAgICAgICAwLjYwODAgICAgICAgICAgICAtMC4xODA1ICAgICAgICAgICAgIDAuNjAyMiAgXG5TcGVjaWVzdmVyc2ljb2xvciAgIFNwZWNpZXN2aXJnaW5pY2EgIFxuICAgICAgICAgICAxLjQ2MzQgICAgICAgICAgICAgMS45NzQyICBcbiJ9 -->
-<pre><code>
-Call:
-lm(formula = Petal.Length ~ ., data = .)
-
-Coefficients:
-      (Intercept)       Sepal.Length        Sepal.Width        Petal.Width  
-          -1.1110             0.6080            -0.1805             0.6022  
-Speciesversicolor   Speciesvirginica  
-           1.4634             1.9742  </code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1860,22 +1831,12 @@ Speciesversicolor   Speciesvirginica
 <p>パイプ演算子を利用して, 複数の関数をまとめて実行したい場合は{}で囲む. データを与える位置は.を利用して明示する. {}内で最後に実行する関数以外はprint()関数を一緒に実行すると安全.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlPiUge1xuICBuYW1lcyguKSAlPiUgcHJpbnQoKVxuICBzdHIoLilcbiAgfVxuXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlPiUge1xuICBuYW1lcyguKSAlPiUgcHJpbnQoKVxuICBzdHIoLilcbiAgfVxuYGBgIn0= -->
 <pre class="r"><code>iris %&gt;% {
   names(.) %&gt;% print()
   str(.)
-  }
-</code></pre>
+  }</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiU2VwYWwuTGVuZ3RoXCIgXCJTZXBhbC5XaWR0aFwiICBcIlBldGFsLkxlbmd0aFwiIFwiUGV0YWwuV2lkdGhcIiAgXCJTcGVjaWVzXCIgICAgIFxuJ2RhdGEuZnJhbWUnOlx0MTUwIG9icy4gb2YgIDUgdmFyaWFibGVzOlxuICQgU2VwYWwuTGVuZ3RoOiBudW0gIDUuMSA0LjkgNC43IDQuNiA1IDUuNCA0LjYgNSA0LjQgNC45IC4uLlxuICQgU2VwYWwuV2lkdGggOiBudW0gIDMuNSAzIDMuMiAzLjEgMy42IDMuOSAzLjQgMy40IDIuOSAzLjEgLi4uXG4gJCBQZXRhbC5MZW5ndGg6IG51bSAgMS40IDEuNCAxLjMgMS41IDEuNCAxLjcgMS40IDEuNSAxLjQgMS41IC4uLlxuICQgUGV0YWwuV2lkdGggOiBudW0gIDAuMiAwLjIgMC4yIDAuMiAwLjIgMC40IDAuMyAwLjIgMC4yIDAuMSAuLi5cbiAkIFNwZWNpZXMgICAgIDogRmFjdG9yIHcvIDMgbGV2ZWxzIFwic2V0b3NhXCIsXCJ2ZXJzaWNvbG9yXCIsLi46IDEgMSAxIDEgMSAxIDEgMSAxIDEgLi4uXG4ifQ== -->
-<pre><code>[1] &quot;Sepal.Length&quot; &quot;Sepal.Width&quot;  &quot;Petal.Length&quot; &quot;Petal.Width&quot;  &quot;Species&quot;     
-'data.frame':   150 obs. of  5 variables:
- $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
- $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
- $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
- $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
- $ Species     : Factor w/ 3 levels &quot;setosa&quot;,&quot;versicolor&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1884,13 +1845,14 @@ Speciesversicolor   Speciesvirginica
 <p>任意の結果のみをオブジェクトに格納するためには, 永続代入&lt;&lt;-を利用する. オブジェクトに格納した結果は表示されないので注意.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImRhdGEuZnJhbWUiXSwibmNvbCI6NSwibnJvdyI6M30sInJkZiI6IlVrUllNd3BZQ2dBQUFBTUFBd1lEQUFNRkFBQUFBQVZWVkVZdE9BQUFCQUlBQUFBQkFBUUFDUUFBQUFGNEFBQURFd0FBQUFVQUFBQU9BQUFBQTBBVVptWm1abVptUUJPWm1abVptWnBBRXN6TXpNek16UUFBQUE0QUFBQURRQXdBQUFBQUFBQkFDQUFBQUFBQUFFQUptWm1abVptYUFBQUFEZ0FBQUFNLzltWm1abVptWmovMlptWm1abVptUC9UTXpNek16TTBBQUFBT0FBQUFBei9KbVptWm1abWFQOG1abVptWm1aby95Wm1abVptWm1nQUFBdzBBQUFBREFBQUFBUUFBQUFFQUFBQUJBQUFFQWdBQUFBRUFCQUFKQUFBQUJteGxkbVZzY3dBQUFCQUFBQUFEQUFRQUNRQUFBQVp6WlhSdmMyRUFCQUFKQUFBQUNuWmxjbk5wWTI5c2IzSUFCQUFKQUFBQUNYWnBjbWRwYm1sallRQUFCQUlBQUFBQkFBUUFDUUFBQUFWamJHRnpjd0FBQUJBQUFBQUJBQVFBQ1FBQUFBWm1ZV04wYjNJQUFBRCtBQUFFQWdBQUFBRUFCQUFKQUFBQUJXNWhiV1Z6QUFBQUVBQUFBQVVBQkFBSkFBQUFERk5sY0dGc0xreGxibWQwYUFBRUFBa0FBQUFMVTJWd1lXd3VWMmxrZEdnQUJBQUpBQUFBREZCbGRHRnNMa3hsYm1kMGFBQUVBQWtBQUFBTFVHVjBZV3d1VjJsa2RHZ0FCQUFKQUFBQUIxTndaV05wWlhNQUFBUUNBQUFBQVFBRUFBa0FBQUFKY205M0xtNWhiV1Z6QUFBQURRQUFBQUtBQUFBQUFBQUFBd0FBQkFJQUFBUC9BQUFBRUFBQUFBRUFCQUFKQUFBQUNtUmhkR0V1Wm5KaGJXVUFBQUQrQUFBRUFnQUFBQUVBQkFBSkFBQUFCMjl3ZEdsdmJuTUFBQUlUQUFBQUJRQUFBQkFBQUFBQkFBUUFDUUFBQUFGeUFBQUFFQUFBQUFFQUJBQUpBQUFBRUhWdWJtRnRaV1F0WTJoMWJtc3RNVElBQUFBS0FBQUFBUUFBQUFFQUFBQU5BQUFBQVFBQUFBTUFBQUFOQUFBQUFRQUFBQVVBQUFRQ0FBQUUvd0FBQUJBQUFBQUZBQVFBQ1FBQUFBWmxibWRwYm1VQUJBQUpBQUFBQld4aFltVnNBQVFBQ1FBQUFBNXliM2R1WVcxbGN5NXdjbWx1ZEFBRUFBa0FBQUFLY205M2N5NTBiM1JoYkFBRUFBa0FBQUFLWTI5c2N5NTBiM1JoYkFBQUFQNEFBQUQrIn0= -->
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Sepal.Length"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Sepal.Width"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Petal.Length"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Petal.Width"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Species"],"name":[5],"type":["fctr"],"align":["left"]}],"data":[{"1":"5.1","2":"3.5","3":"1.4","4":"0.2","5":"setosa","_rn_":"1"},{"1":"4.9","2":"3.0","3":"1.4","4":"0.2","5":"setosa","_rn_":"2"},{"1":"4.7","2":"3.2","3":"1.3","4":"0.2","5":"setosa","_rn_":"3"}],"options":{"columns":{"min":{},"max":[10],"total":[5]},"rows":{"min":[10],"max":[10],"total":[3]},"pages":{}}}
-  </script>
-</div>
-<!-- rnb-frame-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlPiUge1xuICBuYW1lcyguKSAlPiUgcHJpbnQoKVxuICBoIDw8LSBoZWFkKC4sIDMpXG4gIHN0ciguKVxufVxuaFxuYGBgIn0= -->
+<pre class="r"><code>iris %&gt;% {
+  names(.) %&gt;% print()
+  h &lt;&lt;- head(., 3)
+  str(.)
+}
+h</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1899,34 +1861,23 @@ Speciesversicolor   Speciesvirginica
 <p>ggplot2パッケージを利用する場合, 2つの選択肢がある. 1つはprint()関数の中でグラフを描く. もう1つはさらに{}でグラフを描くコードを囲みパイプでprint()関数に渡す.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlPiUgXG4gIHtcbiAgICBwcmludChcbiAgICAgIGdncGxvdCguKSArXG4gICAgICAgIGFlcyhQZXRhbC5MZW5ndGgpICtcbiAgICAgICAgZ2VvbV9oaXN0b2dyYW0oKSlcbiAgICBzdHIoLilcbiAgfVxuXG5gYGAifQ== -->
-<pre class="r"><code>iris %&gt;% 
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShnZ3Bsb3QyKVxuaXJpcyAlPiUgXG4gIHtcbiAgICBwcmludChcbiAgICAgIGdncGxvdCguKSArXG4gICAgICAgIGFlcyhQZXRhbC5MZW5ndGgpICtcbiAgICAgICAgZ2VvbV9oaXN0b2dyYW0oKSlcbiAgICBzdHIoLilcbiAgfVxuYGBgIn0= -->
+<pre class="r"><code>library(ggplot2)
+iris %&gt;% 
   {
     print(
       ggplot(.) +
         aes(Petal.Length) +
         geom_histogram())
     str(.)
-  }
-</code></pre>
+  }</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiJ2RhdGEuZnJhbWUnOlx0MTUwIG9icy4gb2YgIDUgdmFyaWFibGVzOlxuICQgU2VwYWwuTGVuZ3RoOiBudW0gIDUuMSA0LjkgNC43IDQuNiA1IDUuNCA0LjYgNSA0LjQgNC45IC4uLlxuICQgU2VwYWwuV2lkdGggOiBudW0gIDMuNSAzIDMuMiAzLjEgMy42IDMuOSAzLjQgMy40IDIuOSAzLjEgLi4uXG4gJCBQZXRhbC5MZW5ndGg6IG51bSAgMS40IDEuNCAxLjMgMS41IDEuNCAxLjcgMS40IDEuNSAxLjQgMS41IC4uLlxuICQgUGV0YWwuV2lkdGggOiBudW0gIDAuMiAwLjIgMC4yIDAuMiAwLjIgMC40IDAuMyAwLjIgMC4yIDAuMSAuLi5cbiAkIFNwZWNpZXMgICAgIDogRmFjdG9yIHcvIDMgbGV2ZWxzIFwic2V0b3NhXCIsXCJ2ZXJzaWNvbG9yXCIsLi46IDEgMSAxIDEgMSAxIDEgMSAxIDEgLi4uXG4ifQ== -->
-<pre><code>'data.frame':   150 obs. of  5 variables:
- $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
- $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
- $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
- $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
- $ Species     : Factor w/ 3 levels &quot;setosa&quot;,&quot;versicolor&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-plot-begin eyJjb25kaXRpb25zIjpbWzAsImBzdGF0X2JpbigpYCB1c2luZyBgYmlucyA9IDMwYC4gUGljayBiZXR0ZXIgdmFsdWUgd2l0aCBgYmlud2lkdGhgLlxuIl1dLCJoZWlnaHQiOjQyMy45ODAyLCJzaXplX2JlaGF2aW9yIjowLCJ3aWR0aCI6Njg2fQ== -->
-<p><img src="data:image/png;base64,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" /></p>
-<!-- rnb-plot-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>両方とも実行結果は同じ.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlPiUgXG4gIHtcbiAgICB7Z2dwbG90KC4pICtcbiAgICAgICAgYWVzKFBldGFsLkxlbmd0aCkgK1xuICAgICAgICBnZW9tX2hpc3RvZ3JhbSgpfSAlPiUgXG4gICAgICBwcmludCgpIFxuICAgIHN0ciguKVxuICB9XG5cbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlPiUgXG4gIHtcbiAgICB7Z2dwbG90KC4pICtcbiAgICAgICAgYWVzKFBldGFsLkxlbmd0aCkgK1xuICAgICAgICBnZW9tX2hpc3RvZ3JhbSgpfSAlPiUgXG4gICAgICBwcmludCgpIFxuICAgIHN0ciguKVxuICB9XG5gYGAifQ== -->
 <pre class="r"><code>iris %&gt;% 
   {
     {ggplot(.) +
@@ -1934,20 +1885,8 @@ Speciesversicolor   Speciesvirginica
         geom_histogram()} %&gt;% 
       print() 
     str(.)
-  }
-</code></pre>
+  }</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiJ2RhdGEuZnJhbWUnOlx0MTUwIG9icy4gb2YgIDUgdmFyaWFibGVzOlxuICQgU2VwYWwuTGVuZ3RoOiBudW0gIDUuMSA0LjkgNC43IDQuNiA1IDUuNCA0LjYgNSA0LjQgNC45IC4uLlxuICQgU2VwYWwuV2lkdGggOiBudW0gIDMuNSAzIDMuMiAzLjEgMy42IDMuOSAzLjQgMy40IDIuOSAzLjEgLi4uXG4gJCBQZXRhbC5MZW5ndGg6IG51bSAgMS40IDEuNCAxLjMgMS41IDEuNCAxLjcgMS40IDEuNSAxLjQgMS41IC4uLlxuICQgUGV0YWwuV2lkdGggOiBudW0gIDAuMiAwLjIgMC4yIDAuMiAwLjIgMC40IDAuMyAwLjIgMC4yIDAuMSAuLi5cbiAkIFNwZWNpZXMgICAgIDogRmFjdG9yIHcvIDMgbGV2ZWxzIFwic2V0b3NhXCIsXCJ2ZXJzaWNvbG9yXCIsLi46IDEgMSAxIDEgMSAxIDEgMSAxIDEgLi4uXG4ifQ== -->
-<pre><code>'data.frame':   150 obs. of  5 variables:
- $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
- $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
- $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
- $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
- $ Species     : Factor w/ 3 levels &quot;setosa&quot;,&quot;versicolor&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-plot-begin eyJjb25kaXRpb25zIjpbWzAsImBzdGF0X2JpbigpYCB1c2luZyBgYmlucyA9IDMwYC4gUGljayBiZXR0ZXIgdmFsdWUgd2l0aCBgYmlud2lkdGhgLlxuIl1dLCJoZWlnaHQiOjQyMy45ODAyLCJzaXplX2JlaGF2aW9yIjowLCJ3aWR0aCI6Njg2fQ== -->
-<p><img src="data:image/png;base64,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" /></p>
-<!-- rnb-plot-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1960,23 +1899,13 @@ Speciesversicolor   Speciesvirginica
 <p>%&gt;%の途中経過をチラ見したい場合には%T&gt;%演算子を利用する. チラ見とはグラフを描きだしたり, 表を書いたりすることを指す. チラ見した結果は, その後には引き渡されない(スキップされる). チラ見をする関数は同時に複数関数を実行する際と同様に{}とprint()関数を利用すると安全.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlVD4lIFxuICB7bmFtZXMoLikgJT4lIFxuICAgICAgcHJpbnQoKX0gJT4lIFxuICBoZWFkKCkgJT4lIFxuICBzdHIoKVxuXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlVD4lIFxuICB7bmFtZXMoLikgJT4lIFxuICAgICAgcHJpbnQoKX0gJT4lIFxuICBoZWFkKCkgJT4lIFxuICBzdHIoKVxuYGBgIn0= -->
 <pre class="r"><code>iris %T&gt;% 
   {names(.) %&gt;% 
       print()} %&gt;% 
   head() %&gt;% 
-  str()
-</code></pre>
+  str()</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiU2VwYWwuTGVuZ3RoXCIgXCJTZXBhbC5XaWR0aFwiICBcIlBldGFsLkxlbmd0aFwiIFwiUGV0YWwuV2lkdGhcIiAgXCJTcGVjaWVzXCIgICAgIFxuJ2RhdGEuZnJhbWUnOlx0NiBvYnMuIG9mICA1IHZhcmlhYmxlczpcbiAkIFNlcGFsLkxlbmd0aDogbnVtICA1LjEgNC45IDQuNyA0LjYgNSA1LjRcbiAkIFNlcGFsLldpZHRoIDogbnVtICAzLjUgMyAzLjIgMy4xIDMuNiAzLjlcbiAkIFBldGFsLkxlbmd0aDogbnVtICAxLjQgMS40IDEuMyAxLjUgMS40IDEuN1xuICQgUGV0YWwuV2lkdGggOiBudW0gIDAuMiAwLjIgMC4yIDAuMiAwLjIgMC40XG4gJCBTcGVjaWVzICAgICA6IEZhY3RvciB3LyAzIGxldmVscyBcInNldG9zYVwiLFwidmVyc2ljb2xvclwiLC4uOiAxIDEgMSAxIDEgMVxuIn0= -->
-<pre><code>[1] &quot;Sepal.Length&quot; &quot;Sepal.Width&quot;  &quot;Petal.Length&quot; &quot;Petal.Width&quot;  &quot;Species&quot;     
-'data.frame':   6 obs. of  5 variables:
- $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4
- $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9
- $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7
- $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4
- $ Species     : Factor w/ 3 levels &quot;setosa&quot;,&quot;versicolor&quot;,..: 1 1 1 1 1 1</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1985,13 +1914,12 @@ Speciesversicolor   Speciesvirginica
 <p>オブジェクトに結果を格納したいが, チラ見した結果は格納したくない場合には, 最後に%T&gt;%演算子を利用する.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImRhdGEuZnJhbWUiXSwibmNvbCI6NSwibnJvdyI6M30sInJkZiI6IlVrUllNd3BZQ2dBQUFBTUFBd1lEQUFNRkFBQUFBQVZWVkVZdE9BQUFCQUlBQUFBQkFBUUFDUUFBQUFGNEFBQURFd0FBQUFVQUFBQU9BQUFBQTBBVVptWm1abVptUUJPWm1abVptWnBBRXN6TXpNek16UUFBQUE0QUFBQURRQXdBQUFBQUFBQkFDQUFBQUFBQUFFQUptWm1abVptYUFBQUFEZ0FBQUFNLzltWm1abVptWmovMlptWm1abVptUC9UTXpNek16TTBBQUFBT0FBQUFBei9KbVptWm1abWFQOG1abVptWm1aby95Wm1abVptWm1nQUFBdzBBQUFBREFBQUFBUUFBQUFFQUFBQUJBQUFFQWdBQUFBRUFCQUFKQUFBQUJteGxkbVZzY3dBQUFCQUFBQUFEQUFRQUNRQUFBQVp6WlhSdmMyRUFCQUFKQUFBQUNuWmxjbk5wWTI5c2IzSUFCQUFKQUFBQUNYWnBjbWRwYm1sallRQUFCQUlBQUFBQkFBUUFDUUFBQUFWamJHRnpjd0FBQUJBQUFBQUJBQVFBQ1FBQUFBWm1ZV04wYjNJQUFBRCtBQUFFQWdBQUFBRUFCQUFKQUFBQUJXNWhiV1Z6QUFBQUVBQUFBQVVBQkFBSkFBQUFERk5sY0dGc0xreGxibWQwYUFBRUFBa0FBQUFMVTJWd1lXd3VWMmxrZEdnQUJBQUpBQUFBREZCbGRHRnNMa3hsYm1kMGFBQUVBQWtBQUFBTFVHVjBZV3d1VjJsa2RHZ0FCQUFKQUFBQUIxTndaV05wWlhNQUFBUUNBQUFBQVFBRUFBa0FBQUFKY205M0xtNWhiV1Z6QUFBQURRQUFBQUtBQUFBQUFBQUFBd0FBQkFJQUFBUC9BQUFBRUFBQUFBRUFCQUFKQUFBQUNtUmhkR0V1Wm5KaGJXVUFBQUQrQUFBRUFnQUFBQUVBQkFBSkFBQUFCMjl3ZEdsdmJuTUFBQUlUQUFBQUJRQUFBQkFBQUFBQkFBUUFDUUFBQUFGeUFBQUFFQUFBQUFFQUJBQUpBQUFBRUhWdWJtRnRaV1F0WTJoMWJtc3RNVGdBQUFBS0FBQUFBUUFBQUFFQUFBQU5BQUFBQVFBQUFBTUFBQUFOQUFBQUFRQUFBQVVBQUFRQ0FBQUUvd0FBQUJBQUFBQUZBQVFBQ1FBQUFBWmxibWRwYm1VQUJBQUpBQUFBQld4aFltVnNBQVFBQ1FBQUFBNXliM2R1WVcxbGN5NXdjbWx1ZEFBRUFBa0FBQUFLY205M2N5NTBiM1JoYkFBRUFBa0FBQUFLWTI5c2N5NTBiM1JoYkFBQUFQNEFBQUQrIn0= -->
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Sepal.Length"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Sepal.Width"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Petal.Length"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Petal.Width"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Species"],"name":[5],"type":["fctr"],"align":["left"]}],"data":[{"1":"5.1","2":"3.5","3":"1.4","4":"0.2","5":"setosa","_rn_":"1"},{"1":"4.9","2":"3.0","3":"1.4","4":"0.2","5":"setosa","_rn_":"2"},{"1":"4.7","2":"3.2","3":"1.3","4":"0.2","5":"setosa","_rn_":"3"}],"options":{"columns":{"min":{},"max":[10],"total":[5]},"rows":{"min":[10],"max":[10],"total":[3]},"pages":{}}}
-  </script>
-</div>
-<!-- rnb-frame-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZCA8LSBpcmlzICU+JVxuICBoZWFkKDMpICVUPiUgXG4gIHtwcmludChzdHIoLikpfVxuZFxuYGBgIn0= -->
+<pre class="r"><code>d &lt;- iris %&gt;%
+  head(3) %T&gt;% 
+  {print(str(.))}
+d</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -2008,14 +1936,10 @@ Speciesversicolor   Speciesvirginica
 <p>データフレームの列名の指定が必要な場合などでは, %$%演算子を利用することが有効.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlJCUgXG4gIG1lYW4oUGV0YWwuTGVuZ3RoKVxuXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlJCUgXG4gIG1lYW4oUGV0YWwuTGVuZ3RoKVxuYGBgIn0= -->
 <pre class="r"><code>iris %$% 
-  mean(Petal.Length)
-</code></pre>
+  mean(Petal.Length)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDMuNzU4XG4ifQ== -->
-<pre><code>[1] 3.758</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -2024,47 +1948,35 @@ Speciesversicolor   Speciesvirginica
 <p>Rには標本分散を計算する関数はない. 自身で計算するにはかなり読みづらいコードになる.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWVhbigoaXJpcyRQZXRhbC5MZW5ndGggLSBtZWFuKGlyaXMkUGV0YWwuTGVuZ3RoKSleMilcblxuYGBgIn0= -->
-<pre class="r"><code>mean((iris$Petal.Length - mean(iris$Petal.Length))^2)
-</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWVhbigoaXJpcyRQZXRhbC5MZW5ndGggLSBtZWFuKGlyaXMkUGV0YWwuTGVuZ3RoKSleMilcbmBgYCJ9 -->
+<pre class="r"><code>mean((iris$Petal.Length - mean(iris$Petal.Length))^2)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDMuMDk1NTAzXG4ifQ== -->
-<pre><code>[1] 3.095503</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>パイプ演算子を利用することで読みやすく書き換えることができる.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlJCUgXG4gIHN1YnRyYWN0KFBldGFsLkxlbmd0aCxcbiAgICAgICAgICAgUGV0YWwuTGVuZ3RoICU+JSBcbiAgICAgICAgICAgICBtZWFuKCkpICU+JSBcbiAgcmFpc2VfdG9fcG93ZXIoMikgJT4lIFxuICBtZWFuKClcblxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlJCUgXG4gIHN1YnRyYWN0KFBldGFsLkxlbmd0aCxcbiAgICAgICAgICAgUGV0YWwuTGVuZ3RoICU+JSBcbiAgICAgICAgICAgICBtZWFuKCkpICU+JSBcbiAgcmFpc2VfdG9fcG93ZXIoMikgJT4lIFxuICBtZWFuKClcbmBgYCJ9 -->
 <pre class="r"><code>iris %$% 
   subtract(Petal.Length,
            Petal.Length %&gt;% 
              mean()) %&gt;% 
   raise_to_power(2) %&gt;% 
-  mean()
-</code></pre>
+  mean()</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDMuMDk1NTAzXG4ifQ== -->
-<pre><code>[1] 3.095503</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>両方とも実行している内容は同じ.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlJCUgXG4gIGAtYChQZXRhbC5MZW5ndGgsIFxuICAgICAgUGV0YWwuTGVuZ3RoICU+JSBcbiAgICAgICAgbWVhbigpKSAlPiUgXG4gIGBeYCgyKSAlPiUgXG4gIG1lYW4oKVxuXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlJCUgXG4gIGAtYChQZXRhbC5MZW5ndGgsIFxuICAgICAgUGV0YWwuTGVuZ3RoICU+JSBcbiAgICAgICAgbWVhbigpKSAlPiUgXG4gIGBeYCgyKSAlPiUgXG4gIG1lYW4oKVxuYGBgIn0= -->
 <pre class="r"><code>iris %$% 
   `-`(Petal.Length, 
       Petal.Length %&gt;% 
         mean()) %&gt;% 
   `^`(2) %&gt;% 
-  mean()
-</code></pre>
+  mean()</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDMuMDk1NTAzXG4ifQ== -->
-<pre><code>[1] 3.095503</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -2073,18 +1985,13 @@ Speciesversicolor   Speciesvirginica
 <p>%$%演算子を利用する場合に複数の関数を同時に実行したい場合には, {}で囲む. コツは通常のパイプ演算子と同じ.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlJCUge1xuICB2YXIoU2VwYWwuTGVuZ3RoKSAlPiUgXG4gICAgcHJpbnQoKVxuICBzZChTZXBhbC5MZW5ndGgpXG59XG5cbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlJCUge1xuICB2YXIoU2VwYWwuTGVuZ3RoKSAlPiUgXG4gICAgcHJpbnQoKVxuICBzZChTZXBhbC5MZW5ndGgpXG59XG5gYGAifQ== -->
 <pre class="r"><code>iris %$% {
   var(Sepal.Length) %&gt;% 
     print()
   sd(Sepal.Length)
-}
-</code></pre>
+}</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuNjg1NjkzNVxuWzFdIDAuODI4MDY2MVxuIn0= -->
-<pre><code>[1] 0.6856935
-[1] 0.8280661</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -2093,13 +2000,12 @@ Speciesversicolor   Speciesvirginica
 <p>実行した結果を元の変数に代入しなおして結果をアップデートしたい場合には%&lt;&gt;%を使う.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpc1xuXG5gYGAifQ== -->
-<pre class="r"><code>iris
-</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXJpcyAlPD4lIFxuICBoZWFkKDMpICU+JSBcbiAgbmFtZXMoKVxuaXJpc1xuYGBgIn0= -->
+<pre class="r"><code>iris %&lt;&gt;% 
+  head(3) %&gt;% 
+  names()
+iris</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiU2VwYWwuTGVuZ3RoXCIgXCJTZXBhbC5XaWR0aFwiICBcIlBldGFsLkxlbmd0aFwiIFwiUGV0YWwuV2lkdGhcIiAgXCJTcGVjaWVzXCIgICAgIFxuIn0= -->
-<pre><code>[1] &quot;Sepal.Length&quot; &quot;Sepal.Width&quot;  &quot;Petal.Length&quot; &quot;Petal.Width&quot;  &quot;Species&quot;     </code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 </div>
 
