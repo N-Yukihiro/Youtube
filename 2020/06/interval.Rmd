@@ -1,0 +1,180 @@
+---
+title: "信頼区間のシミュレーション"
+output: html_notebook
+---
+
+### 利用するデータ
+
+今回もggplot2パッケージのdiamondsデータを利用する.
+
+```{r}
+library(ggplot2)
+str(diamonds)
+```
+
+### データ内の分散を求める
+
+今回もdiamondsデータを母集団とみなすので, データの標本分散を求め, 母分散とみなす.
+列はpriceを利用する.
+後で利用するために母平均もオブジェクトに格納する.
+    
+```{r}
+var.pop <- mean((diamonds$price - mean(diamonds$price))^2)
+var.pop
+mean.pop <- mean(diamonds$price)
+```
+
+### データの無作為抽出
+
+サイズ100のサンプルを1000個(サンプル数1000)作成する.
+withr::with_seed()関数で乱数の種を指定し, 結果を再現できるようにする.
+purrr::rerun()関数で繰り返し処理を行う.
+
+```{r}
+library(withr)
+library(purrr)
+library(dplyr)
+## msはmulti samplesの略
+ms <- with_seed(27182,
+                rerun(.n = 1000,
+                      sample_n(tbl = diamonds,
+                               size = 100,
+                               replace = FALSE)))
+```
+
+### 各サンプルの平均と95%信頼区間を計算する
+
+map_dfr()関数を利用して, 各サンプルの平均と95%信頼区間を計算し, データフレームへ変換する.
+
+map_dfr()関数の最後の引数で, .id = "++"を指定することで, rerun()関数で作成したリストの各リストの名前を"++"という名前の列に追加する.
+ここでは各リストに通し番号が振られているので, 通し番号をnumberという列に格納している.
+
+```{r}
+ms_ci <- map_dfr(
+  ms,
+  summarise,
+  lowerCI = mean(price) + 
+    qnorm(0.025) * sqrt(var.pop / length(price)),
+  mean = mean(price),
+  upperCI = mean(price) + 
+    qnorm(0.975) * sqrt(var.pop / length(price)),
+    .id = "number")
+```
+
+### 信頼区間とパラメーター
+
+信頼区間にパラメーターが含まれるかどうかを1か0かで判定する.
+
+データフレームで列を操作する(新しい列を作る, 列の中身を変更するetc...)場合には, dplyrパッケージのmutate()関数を利用する.
+第1引数に利用するデータフレーム, 第2引数に++ =の++で列の名前を指定し, =の後で操作方法を指定する.
+
+ここでは, さらにdplyrパッケージのif_else()関数を利用して, 信頼区間の下限より大きく, 上限より小さい場合に1, そうでない場合に0を格納するように指示している.
+
+```{r}
+ci_TF <- dplyr::mutate(ms_ci, 
+                       TF = if_else(
+                         lowerCI <= mean.pop &
+                         upperCI >= mean.pop, 
+                         1L, 0L))
+```
+
+### 信頼区間にパラメーターが含まれる割合
+
+先程作成した, TFの平均を計算する.
+この平均は信頼区間にパラメーターが含まれる割合である.
+実際に95%に近い値が算出されている.
+
+```{r}
+summarise(ci_TF, mean(TF))
+```
+
+### 
+
+標本をすべて表示するのは多すぎるので, 先頭の100標本だけ表示する.
+geom_errobar()関数は信頼区間などを示す際に利用できる.
+aes()内で下限をyminで, 上限をymaxで与える.
+
+```{r}
+ggplot(data = head(ci_TF, 100)) +
+  aes(x = number, 
+      y = mean,
+      colour = TF) +
+  geom_point() +
+  geom_errorbar(
+    aes(ymin = lowerCI,
+        ymax = upperCI), 
+    width = .2) +
+  geom_hline(
+    yintercept = mean.pop, 
+    linetype = "dashed", 
+    colour = "black")
+```
+
+### 複数のサンプルサイズでデータの無作為抽出
+
+サイズ30, 100, 1000のサンプルをそれぞれ1000個作成する.
+
+dplyrパッケージのgroup_by()関数を利用することで, その後の関数を作成したグループごとに実行することができる.
+グループを解除するには, ungroup()を実行する.
+
+実行する処理が多いので%>%演算子で連結した.
+
+```{r}
+ms3 <- with_seed(
+  2718,
+  c(30, 100, 1000) %>% 
+    map(~ rerun(1000, 
+    sample_n(diamonds, .x))) %>%
+    flatten() %>%
+    map_dfr(mutate, size = n(), .id = "number") %>% 
+    group_by(size, number) %>% 
+    summarise(
+      lowerCI = mean(price) + 
+        qnorm(0.025) * sqrt(var.pop / length(price)),
+      mean = mean(price),
+      upperCI = mean(price) + 
+        qnorm(0.975) * sqrt(var.pop / length(price))) %>%
+    mutate(number = row_number()) %>% 
+    ungroup()) %>%
+  mutate(TF = if_else(
+    lowerCI <= mean.pop & upperCI >= mean.pop,
+    1, 0)) %>% 
+  mutate(across(size, as.factor))
+```
+
+### 信頼区間にパラメーターが含まれる割合
+
+先程作成した, TFの平均を計算する.
+この平均は信頼区間にパラメーターが含まれる割合である.
+実際に95%に近い値が算出されている.
+
+```{r}
+ms3 %>% 
+  group_by(size) %>% 
+  summarise(mean(TF))
+```
+
+### 
+
+すべて表示するのは多すぎるので, 先頭の100標本だけ表示する.
+dplyr::slice()関数で指定の行だけ抽出する.
+facet_wrap()関数でグループごとにグラフを描画する.
+
+```{r plot_int2, echo=TRUE, eval=FALSE}
+ms3 %>% 
+  group_by(size) %>% 
+  slice(1:100) %>%
+  ggplot() +
+  aes(x = number, y = mean,
+      colour = TF) +
+  geom_point() +
+  geom_errorbar(
+    aes(ymin = lowerCI,
+        ymax = upperCI), 
+    width = .2) +
+  geom_hline(
+    yintercept = mean.pop, 
+    linetype = "dashed", 
+    colour = "black") +
+  facet_wrap(~size)
+```
