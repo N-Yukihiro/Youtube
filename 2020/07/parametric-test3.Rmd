@@ -1,0 +1,276 @@
+---
+title: "対応のあるデータにおける平均の差の検定"
+output: html_notebook
+---
+
+### 利用するデータ
+
+今回はRにデフォルトで格納されているsleepというデータセットを利用する.
+10人の患者に対して薬を投与して, 睡眠時間を計測したデータ
+2種類の薬を投与してその結果を比較している.
+
+```{r}
+names(sleep)
+```
+
+### データの構造
+
+データを利用する前にデータの構造をstr()関数で把握する.
+extra列に睡眠時間の増減が, group列に投与した薬が, IDに患者のIDが振られている.
+
+```{r}
+str(sleep)
+```
+
+### データの前処理
+
+今回は薬1をコントロール群, 薬2をトリートメント群とする.
+
+効果量の計算上, コントロール群を1, トリートメント群を2にgroupの値を修正する.
+
+列の操作をするために, dplyr::mutate()関数を利用する.
+第2引数と第3引数で同じ列名を指定した場合には, 第2引数で変換した結果をさらに第3引数で扱うことができる.
+
+後の説明のために, xとyというオブジェクトにdplyr::filter()関数を利用して, groupが1である行と2である行をそれぞれ選択して格納.
+
+```{r}
+library(dplyr)
+sleep <- mutate(sleep,
+                group = as.numeric(group),
+                group = 2 - group,
+                group = as.factor(group))
+x <- dplyr::filter(sleep, group == 0)
+y <- dplyr::filter(sleep, group == 1)
+```
+
+### データの記述統計量を確認
+
+睡眠時間の変化をグループごとに把握する.
+dplyrパッケージのgroup_by()関数とsummarise()関数を利用して睡眠時間の変化の平均と標準偏差を確認する.
+
+```{r}
+summ <- sleep %>% 
+  group_by(group) %>% 
+  summarise(mean = extra %>% mean(),
+            sd = extra %>% sd())
+summ
+```
+
+### グループとの差の平均と標準偏差を確認
+
+同じ患者が薬2を飲んだ場合と薬1を飲んだ場合の睡眠時間の差の平均と標準偏差を確認.
+
+```{r}
+library(magrittr)
+subtract(x$extra, y$extra) %>% {
+  mean(.) %>% print()
+  sd(.) %>% print()
+}
+```
+
+### データの描画(箱ひげ図)
+
+2群を比較する際には箱ひげ図を描くのがわかりやすい.
+
+```{r}
+library(ggplot2)
+ggplot(data = sleep) +
+  aes(x = group, 
+      y = extra, 
+      fill = group) +
+  geom_boxplot()
+```
+
+###
+
+対応のあるデータの場合にはポイント同士を線で結んでも差がわかりやすい.
+同じユニット同士を線で結ぶには, geom_line()関数の中でaes(group = ID)を指定する.
+
+```{r point1, echo=TRUE, eval=FALSE}
+ggplot(data = sleep) +
+  aes(x = group, 
+      y = extra, 
+      colour = group) +
+  geom_point() +
+  geom_line(aes(group = ID),
+            colour = "lightgray")
+```
+
+
+### 対応のある平均値の差の$t$検定
+
+対応があるデータにおける平均値の差の$t$検定を行うには, t.test()関数の中で, paired = TRUEを指定する.
+
+```{r}
+t_test <- t.test(extra ~ group, data = sleep, 
+                 paired = TRUE,
+                 alternative = "two.sided", conf.level = 0.95)
+t_test
+```
+
+###
+
+定義に従って対応のある平均値の差の$t$検定における検定統計量$T$をコーディングする.
+
+```{r}
+t <- subtract(x$extra,
+              y$extra) %>% 
+  sum() %>% 
+  divide_by(subtract(x$extra,
+                     y$extra) %>% 
+              sd()) %>% 
+  divide_by(x$extra %>% length() %>% sqrt())
+t
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(t_test$statistic %>% as.numeric(),
+          t)
+```
+
+### 
+
+$p$値も同様に算出する.
+
+```{r}
+p <- t %>%
+  pt(q = ., df = length(x$extra) - 1, lower.tail = FALSE) %>% 
+  multiply_by(2)
+p
+```
+
+実際に関数を用いて計算した結果と一致するか確認
+
+```{r}
+all.equal(t_test$p.value %>% as.numeric(),
+          p)
+```
+
+###
+
+定義に従い, 対応のある平均値の差の信頼区間をコーディング.
+
+```{r}
+ci <- as.numeric(NULL)
+subtract(x$extra,
+              y$extra) %>% 
+  mean() %>% 
+  {
+    add(.,
+        multiply_by(qt(p = 0.025, 
+                       df = subtract(x$extra %>% length(),
+                                     1)),
+                    subtract(x$extra,
+                             y$extra) %>%
+                      sd() %>% 
+                      divide_by(length(x$extra) %>% sqrt()))) ->> ci[1]
+    add(.,
+        multiply_by(qt(p = 0.975, 
+                       df = subtract(x$extra %>% length(),
+                                     1)),
+                    subtract(x$extra,
+                             y$extra) %>%
+                      sd() %>% 
+                      divide_by(length(x$extra) %>% sqrt()))) ->> ci[2]
+  }
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+ci
+all.equal(t_test$conf.int %>% as.numeric(),
+          ci)
+```
+
+### 対応のある2標本の平均の差の検定と1標本検定
+
+対応のある2標本の差を1標本のデータとみなして, その平均値と比較値(0)との差の検定を行うと, 対応のある2標本の平均の差の検定と一致する.
+
+```{r}
+t_test_1 <- t.test(x = x$extra - y$extra, mu = 0, 
+                   alternative = "two.sided", 
+                   conf.level = 0.95)
+t_test_1
+```
+
+###
+
+$t$値
+
+```{r}
+all.equal(t_test$statistic,
+          t_test_1$statistic)
+```
+
+$p$値
+
+```{r}
+all.equal(t_test$p.value,
+          t_test_1$p.value)
+```
+
+95%信頼区間
+
+```{r}
+all.equal(t_test$conf.int,
+          t_test_1$conf.int)
+```
+
+### 検定の結果を図示
+
+検定の結果を図に示すこともできる.
+
+```{r}
+install.packages("ggsignif")
+library(ggsignif)
+ggplot(data = sleep) +
+  aes(x = group,
+      y = extra,
+      fill = group) +
+  geom_boxplot() +
+  geom_signif(
+    comparisons = list(c("0", "1")),
+    test = "t.test",
+    test.args = 
+      list(paired = TRUE,
+           alternative = "two.sided", 
+           conf.level = 0.95),
+    map_signif_level = 
+      function(p)sprintf("p = %.2g", p))
+```
+
+
+### 対応のある2群の効果量
+
+対応のある2群の効果量を計算するには, cohens_d()関数の引数でpaired = TRUEを指定する.
+
+```{r}
+library(effectsize)
+pair_d <- cohens_d(extra ~ group, data = sleep,
+                   paired = TRUE)
+pair_d
+```
+
+###
+
+定義に従って対応のある2群の効果量をコーディングする.
+
+```{r}
+d <- subtract(x$extra,
+              y$extra) %>% 
+  mean() %>% 
+  divide_by(subtract(x$extra,
+                     y$extra) %>% 
+              sd())
+d
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(pair_d$Cohens_d,
+          d)
+```

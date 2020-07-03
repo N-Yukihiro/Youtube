@@ -1,0 +1,223 @@
+---
+title: "平均と比較値の差の検定"
+output: html_notebook
+---
+
+### 利用するデータ
+
+今回はRにデフォルトで格納されているsleepというデータセットを利用する.
+10人の患者に対して薬を投与して, 睡眠時間を計測したデータ.
+2種類の薬を投与してその結果を比較している.
+
+いくつか検定を行うが, 有意な結果が得られるまで検定を繰り返すことを推奨しているわけではないということに注意!
+
+```{r}
+names(sleep)
+```
+
+### データの構造
+
+データを利用する前にデータの構造をstr()関数で把握する.
+extra列に睡眠時間の増減が, group列に投与した薬が, IDに患者のIDが振られている.
+
+```{r}
+str(sleep)
+```
+
+### データの前処理
+
+今回は薬1をコントロール群, 薬2をトリートメント群とする.
+
+1標本に対する検定のため, トリートメント群のみを扱う.
+xというオブジェクトにdplyr::filter()関数を利用して, groupが2である行をそれぞれ選択して格納する.
+
+
+```{r}
+library(dplyr)
+x <- dplyr::filter(sleep, group == 2)
+```
+
+### データの記述統計量を確認
+
+データの記述統計量を確認するには, summary()関数を利用する.
+
+```{r}
+summary(x)
+```
+
+### 平均値と比較値との差のz検定
+
+z検定を行うためには, BDSAパッケージのz.test()関数を利用する.
+引数のxに検定したいデータ(ベクトル), muに比較値, sigma.xに標準偏差を指定する.
+sigma.xは母分散が未知で大標本の場合にも必要.
+
+```{r}
+install.packages("BSDA")
+library(BSDA)
+z_test <- BSDA::z.test(x$extra, mu = 0, sigma.x = sd(x$extra), 
+                       alternative = "two.sided", conf.level = 0.95)
+z_test
+```
+
+### 結果の読み方
+
+まず, One-sample z-Testと1標本に対して, z検定が行われたことが示される.
+
+data:に分析に利用したデータが示される.
+ここではxというオブジェクト.
+
+3行目にz =でz値が, p-valueにp値が示されている.
+そして, alternative hypothesis: true mean is not equal to 0と対立仮説は母平均が帰無仮説である0と一致しないことであったことが示される.
+95 percent confidence intervalにデータの95%信頼区間が示される.
+
+###
+
+定義に従って平均値と比較値との差の$z$検定における検定統計量$T$をコーディングする.
+
+```{r}
+library(magrittr)
+z <- x$extra %>%
+  mean() %>% 
+  subtract(0) %>% 
+  divide_by(divide_by(x$extra %>% sd,
+                      x$extra %>% length() %>% sqrt()))
+z
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(z_test$statistic %>% as.numeric(),
+          z)
+```
+
+### 平均値と比較値との差の$z$検定における$p$値の算出
+
+$p$値も同様に算出する.
+
+```{r}
+p <- z %>% 
+  pnorm(q = ., lower.tail = FALSE) %>% 
+  multiply_by(2)
+p
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(z_test$p.value %>% as.numeric(),
+          p)
+```
+
+###
+
+定義に従い, 1標本($\sigma$未知, 大標本)の信頼区間をコーディング.
+
+```{r}
+ci <- as.numeric(NULL)
+x$extra %>%
+  mean() %>% {
+    add(.,
+        multiply_by(qnorm(p = 0.025),
+                    divide_by(x$extra %>% sd(),
+                              x$extra %>% length() %>%
+                                sqrt()))
+        ) ->> ci[1]
+    add(.,
+        multiply_by(qnorm(p = 0.975),
+                    divide_by(x$extra %>% sd(),
+                              x$extra %>% length() %>%
+                                sqrt()))
+        ) ->> ci[2]
+  }
+ci
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(z_test$conf.int %>% as.numeric(),
+          ci)
+```
+
+### 平均値と比較値との差の$t$検定
+
+t検定を行うためには, デフォルトで格納されている(正確にはstatsパッケージ)t.test()関数を利用.
+
+引数のxに検定したいデータ(ベクトル), muに比較値を指定する.
+z.test()関数と異なり, 標準偏差は自動では計算してくれる.
+結果の読み方はz.test()関数と同じ.
+
+```{r}
+t_test <- t.test(x = x$extra, mu = 0, 
+                 alternative = "two.sided", conf.level = 0.95)
+t_test
+```
+
+###
+
+定義に従って平均値と比較値との差の$t$検定における検定統計量$T$をコーディングする.
+
+```{r}
+t <- x$extra %>% 
+  mean() %>% 
+  subtract(0) %>% 
+  divide_by(divide_by(x$extra %>% sd(),
+                      x$extra %>% length() %>% sqrt()))
+t
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(t_test$statistic %>% as.numeric(),
+          t)
+```
+
+### 平均値と比較値との差の$t$検定における$p$値の算出
+
+$p$値も同様に算出する.
+
+```{r}
+p <- t %>% 
+  pt(q = ., df = length(x$extra) - 1, lower.tail = FALSE) %>% 
+  multiply_by(2)
+p
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(t_test$p.value %>% as.numeric(),
+          p)
+```
+
+###
+
+定義に従い, 1標本($\sigma$未知, 小標本)の信頼区間をコーディング.
+
+```{r}
+ci <- as.numeric(NULL)
+x$extra %>%
+  mean() %>% {
+    add(.,
+        multiply_by(qt(p = 0.025, df = length(x$extra) - 1),
+                    divide_by(x$extra %>% sd(),
+                              x$extra %>% length() %>%
+                                sqrt()))
+        ) ->> ci[1]
+    add(.,
+        multiply_by(qt(p = 0.975, df = length(x$extra) - 1),
+                    divide_by(x$extra %>% sd(),
+                              x$extra %>% length() %>% sqrt()))
+        ) ->> ci[2]
+  }
+ci
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(t_test$conf.int %>% as.numeric(),
+          ci)
+```

@@ -1,0 +1,485 @@
+---
+title: "対応のないデータにおける平均の差の検定"
+output: html_notebook
+---
+
+### 利用するデータ
+
+今回はRにデフォルトで格納されているsleepというデータセットを利用する.
+10人の患者に対して薬を投与して, 睡眠時間を計測したデータ
+2種類の薬を投与してその結果を比較している.
+
+本来は対応のある2群の検定用のデータであるが, 便宜上対応のない2群の検定に利用する.
+
+有意な結果が得られるまで検定を繰り返すことを推奨しているわけではないということに注意!
+
+```{r}
+names(sleep)
+```
+
+### データの構造
+
+データを利用する前にデータの構造をstr()関数で把握する.
+extra列に睡眠時間の増減が, group列に投与した薬が, IDに患者のIDが振られている.
+
+```{r}
+str(sleep)
+```
+
+### データの前処理
+
+今回は薬1をコントロール群, 薬2をトリートメント群とする.
+
+効果量の計算上, コントロール群を1, トリートメント群を2にgroupの値を修正する.
+
+列の操作をするために, dplyr::mutate()関数を利用する.
+第2引数と第3引数で同じ列名を指定した場合には, 第2引数で変換した結果をさらに第3引数で扱うことができる.
+
+後の説明のために, xとyというオブジェクトにdplyr::filter()関数を利用して, groupが1である行と2である行をそれぞれ選択して格納.
+
+```{r}
+library(dplyr)
+sleep <- mutate(sleep,
+                group = as.numeric(group),
+                group = 2 - group,
+                group = as.factor(group))
+x <- dplyr::filter(sleep, group == 0)
+y <- dplyr::filter(sleep, group == 1)
+```
+
+### データの記述統計量を確認
+
+睡眠時間の変化をグループごとに把握する.
+dplyrパッケージのgroup_by()関数とsummarise()関数を利用して睡眠時間の変化の平均と標準偏差を確認する.
+
+```{r}
+summ <- sleep %>% 
+  group_by(group) %>% 
+  summarise(mean = extra %>% mean(),
+            sd = extra %>% sd())
+summ
+```
+
+### データの描画(箱ひげ図)
+
+2群を比較する際には箱ひげ図を描くのがわかりやすい.
+
+```{r}
+library(ggplot2)
+ggplot(data = sleep) +
+  aes(x = group, 
+      y = extra, 
+      fill = group) +
+  geom_boxplot()
+```
+
+### データの描画(棒グラフ)
+
+比較のためには棒グラフを描く場合も多い.
+
+```{r}
+ggplot(data = summ) +
+  aes(x = group,
+      y = mean,
+      fill = group) +
+  geom_bar(stat = "identity")
+```
+
+### 母分散の比の$F$検定
+対応のないデータの平均の差を検定するにはまず等分散性の検定を行うことが多い(ただし多重検定の問題から批判も多い).
+
+等分散性の検定を行うためには, var.test()関数を実行する.
+今回は等分散であるとの帰無仮説を棄却できないため, 帰無仮説を受容する(等分散であるとみなす).
+
+```{r}
+var_test <- var.test(x = x$extra, y = y$extra,
+                     alternative = "two.sided", conf.level = 0.95)
+var_test
+```
+
+### 母分散の比の$F$検定の別の書き方
+
+オブジェクトを分けずとも当分散性の検定を実行できる.
+
+formula =における~の前に検定を行いたい列, ~の後に群を示す列を指定する.
+dataという引数で利用するデータセットを指定する.
+
+以下$t$検定も同様に記述する.
+
+```{r}
+var.test(formula = extra ~ group, data = sleep)
+```
+
+###
+
+定義に従って母分散の比の$F$検定における検定統計量$T$をコーディングする.
+
+```{r}
+library(magrittr)
+f <- divide_by(var(x$extra),
+          var(y$extra))
+f
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(var_test$statistic %>% as.numeric(),
+          f)
+```
+
+### 平均値と比較値との差のz検定における$p$値の算出
+
+$p$値も同様に算出する.
+
+```{r}
+p <- f %>% 
+  pf(q = .,
+     df1 = x$extra %>% length() %>% subtract(1),
+     df2 = y$extra %>% length() %>% subtract(1),
+     lower.tail = FALSE) %>% 
+  multiply_by(2)
+p
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(var_test$p.value %>% as.numeric(),
+          p)
+```
+
+###
+
+定義に従って, 母分散の比の信頼区間をコーディングする.
+
+```{r}
+ci <- as.numeric(NULL)
+divide_by(var(x$extra),
+          var(y$extra)) %>% {
+            multiply_by(., 
+                        qf(p = 0.025,
+                           df1 = x$extra %>% length() %>% subtract(1),
+                           df2 = y$extra %>% length() %>% subtract(1))
+                        ) ->> ci[1]
+            multiply_by(.,
+                        qf(p = 0.975,
+                           df1 = x$extra %>% length() %>% subtract(1),
+                           df2 = y$extra %>% length() %>% subtract(1))
+                        ) ->> ci[2]
+          } 
+ci
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(var_test$conf.int %>% as.numeric(),
+          ci)
+```
+
+### 対応のない平均値の差の$t$検定(等分散)
+
+対応がなく, 等分散なデータにおける平均値の差の$t$検定を行うには, t.test()関数の中で, paired = FALSE, var.equal = TRUEを指定する.
+
+```{r}
+t_test <- t.test(extra ~ group, data = sleep, 
+                 paired = FALSE, var.equal = TRUE,
+                 alternative = "two.sided", conf.level = 0.95)
+t_test
+```
+
+###
+
+定義に従って対応のない平均値の差の$t$検定(等分散)における検定統計量$T$をコーディングする.
+
+```{r}
+t <- add(subtract(x$extra %>% length(),
+                  1) %>% 
+           multiply_by(x$extra %>% var()),
+         subtract(y$extra %>% length(),
+                  1) %>% 
+           multiply_by(y$extra %>% var())) %>%
+  divide_by(add(x$extra %>% length(),
+                y$extra %>% length()) %>% 
+              subtract(2)) %>%
+  multiply_by(add(x$extra %>% length() %>% raise_to_power(-1),
+                  y$extra %>% length() %>% raise_to_power(-1))) %>% 
+  sqrt() %>% 
+  divide_by(mean(x$extra) - mean(y$extra),
+            .)
+t
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(t_test$statistic %>% as.numeric(),
+          t)
+```
+
+### 
+
+$p$値も同様に算出する.
+
+```{r}
+p <- t %>% 
+  pt(q = ., df = sum(x$extra %>% length(),
+                     y$extra %>% length(),
+                     -2),
+     lower.tail = FALSE) %>% 
+  multiply_by(2)
+p
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(t_test$p.value %>% as.numeric(),
+          p)
+```
+
+###
+
+定義に従い, 対応のない平均値の差(等分散)の信頼区間をコーディング.
+
+```{r}
+ci <- as.numeric(NULL)
+add(subtract(x$extra %>% length(),
+             1) %>% 
+      multiply_by(x$extra %>% var()),
+    subtract(y$extra %>% length(),
+             1) %>% 
+      multiply_by(y$extra %>% var())) %>%
+  divide_by(add(x$extra %>% length(),
+                y$extra %>% length()) %>% 
+              subtract(2)) %>%
+  multiply_by(add(x$extra %>% length() %>% raise_to_power(-1),
+                  y$extra %>% length() %>% raise_to_power(-1))) %>% 
+  sqrt() %>% {
+    multiply_by(.,
+                qt(p = 0.025, df = sum(x$extra %>% length(), 
+                                       y$extra %>% length(),
+                                       -2))) %>%
+      add(mean(x$extra) - mean(y$extra)) ->> ci[1]
+    multiply_by(.,
+                qt(p = 0.975, df = sum(x$extra %>% length(),
+                                       y$extra %>% length(),
+                                       -2))) %>% 
+      add(mean(x$extra) - mean(y$extra)) ->> ci[2]
+  }
+```
+
+###
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+ci
+all.equal(t_test$conf.int %>% as.numeric(),
+          ci)
+```
+
+### 対応のない平均値の差のウェルチの$t$検定
+
+対応がなく, 等分散性の仮定を置かないデータにおける平均値の差のウェルチの$t$検定を行うには, t.test()関数の中で, paired = FALSE, var.equal = FALSEを指定する.
+
+```{r}
+t_test <- t.test(extra ~ group, data = sleep, 
+                 paired = FALSE, var.equal = FALSE,
+                 alternative = "two.sided", conf.level = 0.95)
+t_test
+```
+
+###
+
+定義に従って対応のない平均値の差のウェルチの$t$検定における検定統計量$T$をコーディングする.
+
+```{r}
+t <- subtract(mean(x$extra),
+              mean(y$extra)) %>% 
+  divide_by(add(var(x$extra) / length(x$extra),
+                var(y$extra) / length(y$extra)) %>% 
+              sqrt())
+t
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(t_test$statistic %>% as.numeric(),
+          t)
+```
+
+### 
+
+$p$値も同様に算出する.
+
+```{r}
+C <- divide_by(var(x$extra) / length(x$extra),
+               add(var(x$extra) / length(x$extra),
+                   var(y$extra) / length(y$extra)))
+p <- t %>%
+  pt(q = .,
+     df = add(divide_by(C %>% raise_to_power(2),
+                        subtract(x$extra %>% length(),
+                                 1)),
+              divide_by(subtract(1, C) %>% raise_to_power(2),
+                        subtract(y$extra %>% length(),
+                                 1))) %>% 
+       raise_to_power(-1),
+     lower.tail = FALSE) %>% 
+  multiply_by(2)
+p
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(t_test$p.value %>% as.numeric(),
+          p)
+```
+
+###
+
+定義に従って, 対応のない平均値の差の信頼区間をコーディングする.
+
+```{r}
+ci <- as.numeric(NULL)
+add(divide_by(C %>% raise_to_power(2),
+                        subtract(x$extra %>% length(),
+                                 1)),
+    divide_by(subtract(1, C) %>% raise_to_power(2),
+                        subtract(y$extra %>% length(),
+                                 1))) %>% 
+       raise_to_power(-1) %>% 
+  {
+    qt(p = 0.025, df = .) %>% 
+      multiply_by(add(var(x$extra) / length(x$extra),
+                      var(y$extra) / length(y$extra)) %>% 
+                    sqrt()) %>% 
+      add(mean(x$extra) - mean(y$extra)) ->> ci[1]
+    qt(p = 0.975, df = .) %>% 
+      multiply_by(add(var(x$extra) / length(x$extra),
+                      var(y$extra) / length(y$extra)) %>% 
+                    sqrt()) %>% 
+      add(mean(x$extra) - mean(y$extra)) ->> ci[2]
+    }
+```
+
+###
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+ci
+all.equal(t_test$conf.int %>% as.numeric(),
+          ci)
+```
+
+### 対応のない2群のHedgesの$d$
+
+効果量を計算するためにはいくつかパッケージがあるが, 今回はeffectsizeパッケージを利用する.
+
+Hedgesの$d$を計算するには, choens_d()関数を利用する.
+paired = FALSEで対応のない2群の分析ができる.
+
+```{r}
+install.packages("effectsize")
+library(effectsize)
+Heges_d <- effectsize::cohens_d(extra ~ group, data = sleep,
+                                paired = FALSE)
+Heges_d
+```
+
+###
+
+定義に従って対応のない2群のHedgesの$d$をコーディングする.
+
+```{r}
+d <- subtract(mean(x$extra),
+         mean(y$extra)) %>% 
+  divide_by(add(subtract(length(x$extra), 1) %>% 
+                  multiply_by(x$extra %>% var()),
+                subtract(length(y$extra), 1) %>% 
+                  multiply_by(y$extra %>% var())) %>% 
+              divide_by(sum(x$extra %>% length(),
+                            y$extra %>% length(),
+                            -2)) %>% 
+              sqrt())
+d
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(Heges_d$Cohens_d,
+          d)
+```
+
+### 対応のない2群のHedgesの$g$
+
+Hedgesの$d$からバイアスを補正するために, 補正係数をかけたHedgesの$g$を計算するには, hedges_g()関数を利用する.
+
+```{r}
+Hedges_g <- hedges_g(extra ~ group, data = sleep, 
+                     paired = FALSE)
+Hedges_g
+```
+
+###
+
+定義に従って対応のない2群のHedgesの$g$をコーディングする.
+
+```{r}
+g <- subtract(mean(x$extra),
+              mean(y$extra)) %>% 
+  divide_by(add(subtract(x$extra %>% length(), 1) %>% 
+                  multiply_by(x$extra %>% var()),
+                subtract(y$extra %>% length(), 1) %>% 
+                  multiply_by(y$extra %>% var())) %>% 
+              divide_by(sum(x$extra %>% length(),
+                            y$extra %>% length(),
+                            -2)) %>% 
+              sqrt()) %>% 
+  multiply_by(1 - divide_by(3,
+                            add(x$extra %>% length(),
+                                y$extra %>% length()) %>%
+                                    multiply_by(4) %>% 
+                                    subtract(9)))
+g
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(Hedges_g$Hedges_g,
+          g)
+```
+
+### 対応のない2群のGlassの$\Delta$
+
+Glassの$\Delta$を利用するには, glass_delta()関数を利用する.
+
+```{r}
+Glass_delta <- glass_delta(extra ~ group, data = sleep)
+Glass_delta
+```
+
+###
+
+定義に従って対応のない2群のGlassの$\Delta$をコーディングする.
+
+```{r}
+delta <- subtract(x$extra %>% mean(),
+                  y$extra %>% mean()) %>%
+  divide_by(y$extra %>% sd())
+delta
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(Glass_delta$Glass_delta,
+          delta)
+```
