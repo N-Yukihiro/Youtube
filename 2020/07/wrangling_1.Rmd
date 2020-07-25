@@ -1,0 +1,342 @@
+---
+title: "Rによるデータ整形: 列選択"
+output: html_notebook
+---
+
+### 列を選択する
+
+列を選択するには dplyr::select() を利用する.
+
+第1引数に利用するデータ, それ以降にどの列を選択するのかなどを指定する.
+
+見やすくするために, irisのデータを3行に絞る.
+
+```{r}
+library(dplyr)
+library(tidylog, warn.conflicts = FALSE)
+dat <- head(iris, 3)
+```
+
+
+### 列名指定による選択
+
+irisのデータからがく片の長さの列を取り出す.
+それぞれ取り出したい列名を指定する.
+
+ここでは, 第1引数で指定すべきデータは, パイプ関数で繋げているため指定しない.
+
+dplyr::をつけると, tidylogパッケージは機能しないことに注意.
+
+```{r}
+dat %>% 
+  select(Sepal.Length)
+```
+
+### 列名指定による選択
+
+複数列選択する際には, カンマ(,)で区切る.
+
+```{r}
+dat %>% 
+  select(Sepal.Length, Petal.Length)
+```
+
+### 列番号指定による選択
+
+列選択は, 列の番号(最も左にあるものが1)で指定することもできる.
+1列目と3列目を取り出す.
+
+```{r}
+dat %>% 
+  select(1, 3)
+```
+
+### 最後の列を選択
+
+最後の列を選択するには, last_col()関数を利用する.
+
+Rには珍しく0から数字が始まることに注意.
+一番最後の列を選択する際にはlast_col(0),  最後から2番目の列を選択する際にはlast_col(1).
+
+```{r}
+dat %>% 
+  select(last_col(0))
+```
+
+### 連続する列の選択1
+
+コロン(:)を使うことで連続する列番号で指定することもできる.
+1列目から3列目を取り出す.
+
+```{r}
+dat %>% 
+  select(1:3)
+```
+
+### 連続する列の選択2
+
+連続する列はを列名でも指定できる.
+Sepal.Lengthの列からPetal.Length列までを取り出す.
+
+```{r}
+dat %>% 
+  select(Sepal.Length:Petal.Length)
+```
+
+### 連続する列の選択3
+
+最後から複数列選択する場合には, 書き方に注意.
+
+last_col(2:0)とすると元のデータの列の並び順どおりに3列後ろから選択する.
+
+```{r}
+dat %>% 
+  select(last_col(2:0))
+```
+
+### 連続する列の選択4
+
+最後から複数列選択する場合には, 書き方に注意.
+
+last_col(0:2)とすると最後の列, 後ろから2番目の列, 後ろから3番目の列のように列が選択される.
+    
+```{r}
+dat %>% 
+  select(last_col(0:2))
+```
+
+### 列の除外1
+
+除きたい列がある場合には-で除くことができる.
+Sepal.LengthとSpeciesを除く.
+
+```{r}
+dat %>% 
+  select(-Sepal.Length, -Species)
+```
+
+### 列の除外2
+
+除きたい列はc()で複数選択することもできる.
+
+```{r}
+dat %>% 
+  select(-c(Sepal.Length, Petal.Length))
+```
+
+### 列の除外3
+
+連続する列を指定するコロン(:)を併用すれば, 連続した列を除外できる.
+
+```{r}
+dat %>% 
+  select(-(Sepal.Width:Petal.Width))
+```
+
+### 文字列の一致による列選択(前方一致)
+
+指定した文字列と一致する列を選択することもできる.
+
+列名の前方一致で列を選択するには, 第2引数以降にstarts_with(" ")と書く.
+デフォルトでは " " の中の文字の大文字と小文字は区別されない.
+
+```{r}
+dat %>% 
+  select(starts_with("petal"))
+```
+
+### 文字列の一致による列選択(後方一致)
+
+列名の後方一致で列を選択するには, 第2引数以降にends_with(" ")と書く.
+大文字と小文字を区別するためには, ignore.case = FALSEを追記する.
+
+```{r}
+dat %>% 
+  select(ends_with("Length", ignore.case = FALSE))
+```
+
+### 文字列の一致による列選択(部分一致)
+
+列名の部分一致で列を選択するには, 第2引数以降にcontains(" ")と書く.
+
+```{r}
+dat %>% 
+  select(contains("al"))
+```
+
+### 文字列の一致による列選択(正規表現)
+
+正規表現で列を選択することもできる.
+第2引数以降にmatches(".*.")と書く.
+
+```{r}
+dat %>% 
+  select(matches(".i."))
+```
+
+### 文字列の一致による列選択(事前指定)1
+
+指定したい列名をあらかじめ指定し, その列を選択することもできる.
+あらかじめ指定した列名を選択するにはall_of()関数を利用する.
+
+```{r}
+var_list <- c("Sepal.Length", "Petal.Width")
+dat %>% 
+  select(all_of(var_list))
+```
+
+### 文字列の一致による列選択(事前指定)2
+
+all_of()関数は完全に一致しなければエラーとなる.
+
+ここでは, Sepal.lengthとlが小文字になっているため, エラーになる.
+
+```{r}
+wrong_list <- c("Sepal.length", "Petal.Length")
+# エラー
+dat %>% 
+  select(all_of(wrong_list))
+```
+
+### 文字列の一致による列選択(事前指定)3
+
+any_of()関数は完全に一致しなくても一致する列名だけ選択をしてくれる.
+
+```{r}
+wrong_list <- c("Sepal.length", "Petal.Length")
+dat %>% 
+  select(any_of(wrong_list))
+```
+
+### データ型による列選択
+
+データ型がnumericである列だけ選択したい場合には, where()関数を併用する.
+
+where()関数の中で条件を書く.
+where()関数はdplyr1.0.0以降の新機能.
+    
+```{r}
+dat %>% 
+  select(where(is.numeric))
+```
+
+### 条件を組み合わせた列選択1
+
+複数の条件の論理積(かつ)で列選択する際には, &で条件をつなぐ.
+
+```{r}
+dat %>% 
+  select(where(is.numeric) & 
+           ends_with("Length",
+                     ignore.case = FALSE))
+```
+
+### 条件を組み合わせた列選択2
+
+複数の条件の論理和(または)で列選択する際には, |で条件をつなぐ.
+
+```{r}
+dat %>% 
+  select(where(is.factor) | 
+           ends_with("Length", 
+                     ignore.case = FALSE))
+```
+
+### 列の並び替え1
+
+特定の列を先頭に移動したければ, everything()関数を併用する.
+
+```{r}
+dat %>% 
+  select(Species, Petal.Length, everything())
+```
+
+### 列の並び替え2
+
+relocate()関数でも列の並び替えができる.
+
+```{r}
+dat %>% 
+  relocate(Species, Petal.Length)
+```
+
+### 列の並び替え3
+
+特定の列の前に移動したければ, 引数で.beforeを追加する.
+
+```{r}
+dat %>% 
+  relocate(Species, Petal.Length, 
+           .before = Sepal.Width)
+```
+
+### 列の並び替え4
+
+同様に.afterを引数に追加することで, 特定の列のあとに指定した列を移動できる.
+
+```{r}
+dat %>% 
+  relocate(Species, Petal.Length, 
+           .after = Sepal.Width)
+```
+
+### 列の並び替え5
+
+.afterとlast_col()関数を組み合わせることで, 特定の列を最後に移動できる.
+
+```{r}
+dat %>% 
+  relocate(Species, Petal.Length, 
+           .after = last_col(0))
+```
+
+### 列名の変更1
+
+列名を別の名前に置き換えて選択することもできる.
+そのためには, 新しい列名 = 選択したい列名と書く.
+
+```{r}
+dat %>% 
+  select(var = Species)
+```
+
+### 列名の変更2
+
+複数の列に同じ列名+連番を振りたい場合には, 同じ新しい列名に複数の列を与える.
+
+```{r}
+dat %>% 
+  select(var = 1:4)
+```
+
+### 連番を利用した列選択
+
+連番で並んでいる列を利用して選択することもできる.
+その際にはnum_range()関数を利用し, prefixに共通する列名, rangeに連番の範囲, widthに連番の桁数を指定する.
+
+```{r}
+dat %>% 
+  select(var = contains("al")) %>% 
+  select(num_range(prefix = "var", 
+                   range  = 1:3, 
+                   width  = 1))
+```
+
+### 列名の変更3
+
+特定の列名だけ変更し, 他の列名も残す場合には, rename()関数を利用する.
+
+```{r}
+dat %>% 
+  rename(var = Petal.Length)
+```
+
+### 列名の変更4
+
+条件に沿った列の列名をまとめて変更する場合には, rename_with()関数を利用する.
+
+```{r}
+dat %>% 
+  rename_with(toupper,
+              where(is.numeric))
+```

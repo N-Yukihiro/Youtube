@@ -1,0 +1,250 @@
+---
+title: "Rによるデータ整形: 行選択"
+output: html_notebook
+---
+
+### 行を選択する
+
+行を選択するにはdplyr::filter()関数を利用する.
+
+第一引数に利用するデータ, それ以降に行を選択する条件などを指定する.
+
+```{r}
+library(dplyr)
+library(tidylog)
+```
+
+### 条件に一致した行の選択1
+
+irisのデータからがく片の長さが平均(5.84)より大きい行を取り出すには>を利用する.
+
+```{r}
+iris %>% 
+  dplyr::filter(Sepal.Length > 5.84)
+```
+
+### 条件に一致した行の選択2
+
+irisのデータからがく片の長さが平均(5.84)以上の行を取り出すには>=を利用する.
+
+```{r}
+iris %>% 
+  filter(Sepal.Length >= 5.84)
+```
+
+### 条件に一致した行の選択3
+
+単一の値と完全に一致する行を選択するには==で指定する.
+
+```{r}
+iris %>% 
+  filter(Species == "versicolor")
+```
+
+### 条件に一致しない行の選択
+
+単一の値と等しくない行を選択するには!=で指定する.
+
+```{r}
+iris %>% 
+  filter(Species != "versicolor")
+```
+
+### 条件の範囲に該当する行の選択
+
+条件に当てはまる範囲で行を選択することもできる.
+その際にはbetween()で指定する.
+
+```{r}
+iris %>% 
+  filter(between(Sepal.Length, 5, 6))
+```
+
+### 複数条件による行の選択(論理和)
+
+複数条件で行を選択する際に「または(論理和)」で指定することもできる.
+論理和を利用する際には条件を|でつなぐ.
+
+```{r}
+iris %>% 
+  filter(Species != "setosa" | Sepal.Length > 5.5)
+```
+
+### 複数条件による行の選択(論理積)
+
+複数条件で行を選択する際に「かつ(論理積)」で指定することもできる.
+論理積を利用する際には条件を&または,でつなぐ.
+
+```{r}
+iris %>% 
+  filter(Species != "setosa" & Sepal.Length > 5.5)
+```
+
+### 複数条件による行の選択(排他的論理和)1
+
+同様に排他的論理和を選択することもできる.
+排他的論理和はxor()関数を利用する.
+
+```{r}
+iris %>% 
+  filter(xor(Sepal.Length > 5.84, 
+             Petal.Length >= 3.76))
+```
+
+### 複数条件による行の選択(排他的論理和)2
+
+同様に排他的論理和の余事象を選択するには!をxor()関数の前につける.
+
+```{r}
+iris %>% 
+  filter(!xor(Sepal.Length > 5.84, 
+              Petal.Length >= 3.76))
+```
+
+### 部分集合を利用した行の選択1
+
+部分集合に一致する行を選択するには%in%演算子を利用する.
+
+```{r}
+iris %>% 
+  filter(Species %in% c("setosa", "virginica"))
+```
+
+### 部分集合を利用した行の選択2
+
+部分集合に一致しない行を選択するには先頭に!をつける.
+
+```{r}
+iris %>% 
+  filter(!Species %in% c("setosa", "virginica"))
+```
+
+### 重複の削除1
+
+重複を削除するにはdplyr::distinct()関数を利用する/
+
+```{r}
+iris %>% 
+  distinct(Species)
+```
+
+### 重複の削除2
+
+重複を削除するにはdistinct()関数を利用する.
+across()関数で囲めば, select()関数と同様に列を選択できる.
+
+```{r}
+iris %>% 
+  distinct(across(contains("Len")))
+```
+
+### 重複の削除3
+
+指定した列以外も残す場合には.keep_all = TRUEと記載する.
+
+結果を見るとsetosa, versicolor, virginicaのそれぞれ最初に登場した行が選択されている.
+
+```{r}
+iris %>% 
+  distinct(Species, .keep_all = TRUE)
+```
+
+### 無作為抽出(サンプルサイズの指定)
+
+行数を指定してランダムサンプルするためには, dplyr::slice_sample()を利用する.
+
+```{r}
+iris %>% 
+  slice_sample(n = 5, replace = TRUE)
+```
+
+### 無作為抽出(割合の指定)
+
+割合を指定してランダムサンプルするためには, dplyr::slice_sample()を利用する.
+
+```{r}
+iris %>% 
+  slice_sample(prop = 0.1, replace = TRUE)
+```
+
+### 行番号による抽出
+
+行番号を指定して行を選択するにはdplyr::slice()を利用する.
+
+```{r}
+iris %>% 
+  slice(10:15)
+```
+
+### 先頭から指定した行数の抽出
+
+先頭から指定した行数を抽出するには, slice_head()関数を利用する.
+
+ほとんどhead()関数と変わらない.
+最後から指定するslice_tail()関数もある.
+
+```{r}
+iris %>% 
+  slice_head(n = 5)
+```
+
+### 行の並び替え(arrange)
+
+行を昇順(小さいものから順番並べる)で並び変えるにはarrange()関数を利用する.
+
+
+```{r}
+iris %>% 
+  arrange(Sepal.Length)
+```
+
+### 降順による並び替え
+
+行を降順(大きいものから順番並べる)で並び変えるにはarrange()関数の中でdesc()関数で指定する.
+
+```{r}
+iris %>% 
+  arrange(desc(Sepal.Length))
+```
+
+### 複数条件による並び替え
+
+並び変えを複数条件で行うこともできる.
+
+先に書いた列が優先され, 先に書いた列の値が同じ時に, 次の列を並び替える.
+
+```{r}
+iris %>% 
+  arrange(Species, desc(Sepal.Length))
+```
+
+### 降順で選択
+
+指定した行数を降順で選択するには, slice_max()関数を利用する.
+
+```{r}
+iris %>% 
+  slice_max(Sepal.Width, n = 3)
+```
+
+### 昇順で選択1
+
+指定した行数を昇順で選択するには, slice_min()関数を利用する.
+
+同じ値がある場合には, 同順位として該当行をすべて選択するため, 指定した行数と一致しない場合がある.
+
+```{r}
+iris %>% 
+  slice_min(Sepal.Width, n = 3)
+```
+
+### 昇順で選択2
+
+指定した行数を昇順で選択するには, slice_min()関数を利用する.
+
+同じ値があった場合にもwith_ties = FALSEを書くことで, 指定行数を選択する.
+
+```{r}
+iris %>% 
+  slice_min(Sepal.Width, n = 3, with_ties = FALSE)
+```
