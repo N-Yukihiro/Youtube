@@ -1,0 +1,427 @@
+---
+title: "最小二乗法"
+subtitle: "単回帰分析"
+output: html_notebook
+---
+
+### 利用するデータ
+
+本日利用するデータはmtcarsデータ.
+燃費(mpg)を応答変数に排気量(disp)やレースタイム(qsec), オートマ車とマニュアル車を表すダミー変数(am)を説明変数とする.
+
+```{r}
+library(dplyr)
+dat <- select(mtcars,
+              mpg, disp, qsec, am)
+str(dat)
+```
+
+###
+
+利用する3変数でペアプロットをする.
+
+```{r}
+library(ggplot2)
+library(GGally)
+ggpairs(dat)
+```
+
+### 単回帰分析
+
+最小二乗法を用いて単回帰分析を行うためには, lm()関数を利用する.
+
+第1引数に分析のモデルを指定する.
+~の前に応答変数を, ~の後に説明変数を指定する.
+    
+```{r}
+ols1 <- lm(mpg ~ disp, data = dat)
+```
+
+### 結果の示し方
+
+結果はjtoolsパッケージのsumm()関数が便利.
+
+```{r}
+install.packages("jtools")
+library(jtools)
+jtools::summ(ols1)
+```
+
+### 結果の読み方
+
+MODEL INFOにモデルの内容が記述される.
+Observationsにサンプルサイズが, Dependent Variableに応答変数が, Typeに分析方法が示される.
+今回はサンプルサイズ32で, 応答変数はmpg, 分析方法は最小二乗法(OLS)であることが示される.
+
+MODEL FITに分析の結果が記述される.
+回帰式の適合度検定のF値がまず示され, p値が計算されている.
+次に決定係数$R^2$の値が示され, その下に自由度調整済み決定係数$adj. R^2$が示されるが, 単回帰分析の場合には, $R^2$の値を見れば良い.
+
+最後の表に分析の結果が示される.
+(Intercept)に定数項が, その後に説明変数が示される.
+Est. の列に回帰係数が, S.E. に標準誤差が示される.
+t val.にt値が示され, pにp値が示される.
+
+### 回帰係数の95%信頼区間を表示
+
+回帰係数の95%信頼区間を表示するには, summ(confint = TRUE)を指定する.
+
+```{r}
+summ(ols1, confint = TRUE)
+```
+
+### 標準回帰係数の算出
+
+標準回帰係数を算出するには引数にscale = TRUE, transform.response = TRUEを追加する.
+
+```{r}
+summ(ols1,
+     scale = TRUE,
+     transform.response = TRUE)
+```
+
+### 散布図と回帰直線
+
+散布図に回帰直線を引きたい場合には, geom_smooth()関数を利用する.
+
+```{r}
+ggplot(data = dat) +
+  aes(x = disp, y = mpg) +
+  geom_point() +
+  geom_smooth(method = "lm", 
+              se = FALSE)
+```
+
+### 散布図と回帰直線
+
+回帰直線は必ず説明変数と応答変数の平均を通る.
+
+```{r}
+ggplot(data = dat) +
+  aes(x = disp, y = mpg) +
+  geom_point() +
+  geom_smooth(method = "lm", 
+              se = FALSE) +
+  geom_vline(xintercept = dat$disp %>% mean()) +
+  geom_hline(yintercept = dat$mpg %>% mean())
+```
+
+### 定義に従って回帰係数を算出する
+
+定義に従って回帰係数を算出する.
+
+```{r}
+b <- cov(dat$mpg, dat$disp) / var(dat$disp)
+b
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(ols1$coefficients[2] %>% as.numeric(),
+          b)
+```
+
+### 定義に従って定数項を算出する
+
+定義に従って定数項を算出する.
+
+```{r}
+library(magrittr)
+a <- dat %$% 
+  subtract(mpg %>% mean(),
+           multiply_by(b,
+                       disp %>% mean()))
+a
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(ols1$coefficients[1] %>% as.numeric(),
+          a)
+```
+
+### 最適化を利用した定数項と回帰係数の算出
+
+定数項と回帰係数をベクトル化し, 残差の2乗を最小化する.
+関数の最小化・最大化にはoptim()関数を利用する.
+ここでは, 特に準ニュートン法(BFGS)を利用する.
+
+```{r}
+f <- function(b){
+  mtcars %$% 
+    subtract(mpg,
+             multiply_by_matrix(cbind(1,
+                                      disp),
+                         b)) %>% 
+    raise_to_power(2) %>% 
+    sum()
+}
+op <- optim(c(0, 0), f, method = "BFGS")
+```
+
+###
+
+数値解析的に行っているため, 若干の誤差を含む.
+
+```{r}
+op
+```
+
+### 定義に従って回帰係数の標準誤差を求める
+
+定義に従って回帰係数の標準誤差を求める.
+
+```{r}
+se <- sum(ols1$residuals ^ 2) %>% 
+  divide_by(ols1$df.residual) %>% 
+  divide_by(subtract(dat$disp,
+                     dat$disp %>% mean()) %>% 
+              raise_to_power(2) %>% 
+              sum()) %>% 
+  sqrt()
+se
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(summary(ols1)$coefficients[2,2],
+          se)
+```
+
+### 定義に従って回帰係数の検定統計量を求める
+
+定義に従って回帰係数の検定統計量を求める.
+
+```{r}
+t <- b / se
+t
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(summary(ols1)$coefficients[2,3],
+          t)
+```
+
+###
+
+同様にp値も算出する.
+
+```{r}
+p <- pt(q = t, df = ols1$df.residual,
+        lower.tail = TRUE) %>% 
+  multiply_by(2)
+p
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(summary(ols1)$coefficients[2,4],
+          p)
+```
+
+### 回帰係数の95%信頼区間
+
+定義に従って回帰係数の信頼区間を算出する.
+
+```{r}
+ci <- as.numeric(NULL)
+ci[1] <- add(b,
+             qt(p = 0.025, 
+                df = ols1$df.residual) %>% 
+               multiply_by(se))
+ci[2] <- add(b,
+             qt(p = 0.975, 
+                df = ols1$df.residual) %>% 
+               multiply_by(se))
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(confint(ols1)[2,] %>% as.numeric,
+          ci)
+```
+
+### 決定係数1
+
+応答変数$y_i$と予測値$\hat{y_i}$の相関係数の2乗から決定係数を算出する.
+
+```{r}
+r2.1 <- cor(ols1$fitted.values, dat$mpg)^2
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(summary(ols1)$r.square %>% as.numeric,
+          r2.1)
+```
+
+### 決定係数2
+
+回帰係数が0の場合と比較して, どれだけ残差平方和が小さくなっているかを比で表し, 1から引いて算出する.
+
+```{r}
+r2.2 <- subtract(1,
+                 divide_by(ols1$residuals %>% 
+                             raise_to_power(2) %>% 
+                             sum(),
+                           subtract(dat$mpg,
+                                    dat$mpg %>% mean()) %>% 
+                             raise_to_power(2) %>% 
+                             sum()))
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(r2.1,
+          r2.2)
+```
+
+### 決定係数3
+
+応答変数$y_i$と説明変数$x_i$の相関係数の2乗から算出する.
+
+```{r}
+r2.3 <- cor(dat$mpg, dat$disp)^2
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(r2.1,
+          r2.3)
+```
+
+### F値
+
+定義にしたがって検定統計量を算出する.
+
+```{r}
+f <- divide_by(r2.1,
+               1 - r2.1) %>% 
+  multiply_by(ols1$df.residual)
+f
+```
+
+- 実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(summary(ols1)$fstatistic[1] %>% as.numeric,
+          f)
+```
+
+### 
+
+同様にp値も算出する.
+
+```{r}
+pf(q = f, 
+   df1 = 1, 
+   df2 = ols1$df.residual,
+   lower.tail = FALSE)
+```
+
+### 標準回帰係数
+
+標準回帰係数はデータを標準化するためのscale()関数を用いれば良い.
+
+```{r}
+sc <- dat %>% 
+  scale() %>% 
+  as.data.frame() %>% 
+  lm(mpg ~ disp, data = .)
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(summ(ols1, 
+               scale = TRUE, 
+               transform.response = TRUE)$coeftable[2, 1],
+          summary(sc)$coefficient[2, 1])
+```
+
+###
+
+単回帰分析の標準回帰係数は応答変数と説明変数の相関係数と一致する.
+
+```{r}
+all.equal(summ(ols1, 
+               scale = TRUE, 
+               transform.response = TRUE)$coeftable[2, 1],
+          cor(dat$mpg, dat$disp))
+```
+
+### 標準回帰係数の変換
+
+応答変数の標準偏差を説明変数の標準偏差で除した値を標準回帰係数にかけると標準化前の回帰係数が得られる.
+
+```{r}
+all.equal(summary(ols1)$coefficient[2, 1],
+          summary(sc)$coefficient[2, 1] %>% 
+            multiply_by(divide_by(dat$mpg %>% sd(),
+                                  dat$disp %>% sd())))
+```
+
+### ダミー変数と単回帰分析
+
+1つのダミー変数のみを説明変数とする単回帰分析を行う.
+
+```{r}
+ols2 <- lm(mpg ~ am, data = dat)
+summ(ols2, digits = 4)
+```
+
+### ダミー変数と単回帰分析の定数項と回帰係数1
+
+ダミー変数と単回帰分析の定数項はダミー変数が0の時の応答変数の平均と一致し, 回帰係数は平均の差と一致する.
+
+```{r}
+d <dat %>% 
+  group_by(am) %>% 
+  summarise(mean = mean(mpg), .groups = "drop") %>% 
+  mutate(diff = lead(mean) - mean)
+d
+```
+
+### ダミー変数と単回帰分析の定数項と回帰係数2
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(ols2$coefficients[1] %>% as.numeric(),
+          d[1, 2] %>% as.numeric())
+all.equal(ols2$coefficients[2] %>% as.numeric(),
+          d[1, 3] %>% as.numeric())
+```
+
+### ダミー変数と単回帰分析の検定統計量
+
+ダミー変数と単回帰分析の検定統計量及びp値はStudentのt検定の結果と一致する.
+
+```{r}
+t_test <- t.test(filter(dat, am == 1)$mpg,
+                 filter(dat, am == 0)$mpg,
+                 var.equal = TRUE)
+t_test
+```
+
+### 
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(summary(ols2)$coefficients[2,3],
+          t_test$statistic %>% as.numeric())
+all.equal(summary(ols2)$coefficients[2,4],
+          t_test$p.value %>% as.numeric())
+```
+

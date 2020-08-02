@@ -1,0 +1,145 @@
+---
+title: "Rによるデータ整形: データの結合"
+subtitle: "dplyr::*_join 他"
+output: html_notebook
+---
+
+### データを結合する
+
+データセットとデータセットを結合するには, dplyrパッケージの*_join関数群を使う.
+dplyrパッケージに含まれているband_* のデータを使う.
+
+###
+
+members
+
+```{r}
+library(dplyr)
+library(tidylog, warn.conflicts = FALSE)
+dplyr::band_members
+```
+
+###
+
+instruments
+
+```{r}
+band_instruments
+```
+
+###
+
+instruments2
+
+```{r}
+band_instruments2
+```
+
+### full_join()
+
+2つのデータセットの全ての行と列を結合するにはfull_join()関数を使う.
+第1引数に結合されるデータ, 第2引数に結合するデータ, 第3引数に結合に使用する列を指定する.
+結合されるデータがない場合はNAとなる.
+
+```{r}
+full_join(band_members,
+          band_instruments, 
+          by = "name")
+```
+
+### left_join()
+
+左側のデータセットにある行を基準に右側のデータセットを結合するにはleft_join()関数を利用する.
+結合に利用するキーとなる列名が異なる場合は, c("A" = "B")とする.
+
+```{r}
+left_join(
+  band_members, 
+  band_instruments2,
+  by = c("name" = "artist")
+  )
+```
+
+### inner_join()
+
+一致する行だけを残したい場合はinner_join()関数を利用する.
+
+```{r}
+inner_join(band_members,
+           band_instruments, 
+           by = "name")
+```
+
+### semi_join()
+
+一致する行だけを残し, なおかつ結合されるデータの列のみを残すには, semi_join()関数を利用する.
+
+```{r}
+semi_join(band_members, 
+          band_instruments, 
+          by = "name")
+```
+
+### anti_join()
+
+一致しなかった行だけを選択するにはanti_join()を使う.
+
+```{r}
+anti_join(band_members,
+          band_instruments, 
+          by = "name")
+```
+
+### 2つ以上の条件の指定
+
+結合する列を2つ以上指定することもできる.
+
+```{r}
+full_join(band_members,
+          band_instruments, 
+          by = "name") %>% 
+  inner_join(
+    band_instruments2,
+    by = c("name" = "artist", 
+           "plays")
+    )
+```
+
+### bind_cols()
+
+データセットとデータセットを横に結合する(列を増やす)にはbind_cols()関数を利用する.
+
+```{r}
+bind_cols(band_instruments,
+          band_instruments2)
+```
+
+### 
+
+データの行数が一致しないとエラーになることに注意.
+
+```{r}
+band_instruments %>% 
+  slice(1:2) %>% 
+  bind_cols(band_instruments2)
+```
+
+### bind_rows()
+
+データセットとデータセットを縦に結合する(行を増やす)にはbind_rows()関数を利用する.
+
+```{r}
+bind_rows(band_instruments, 
+          band_instruments)
+```
+
+###
+
+列名が一致しない場合には, NAで埋める.
+
+```{r}
+band_instruments %>% 
+  select(1) %>% 
+  bind_rows(band_instruments)
+```
+
