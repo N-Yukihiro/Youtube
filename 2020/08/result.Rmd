@@ -1,0 +1,138 @@
+---
+title: "回帰分析"
+subtitle: "結果の示し方"
+output: html_notebook
+---
+
+### 利用するデータ
+
+本日利用するデータはmtcarsデータ.
+燃費(mpg)を応答変数に排気量(disp)やレースタイム(qsec)を説明変数とする.
+
+```{r}
+str(mtcars)
+```
+
+### 回帰分析
+
+いくつかの結果を表示するために2つのモデルで回帰分析を行う.
+最尤法でも最小二乗法でも構わない.
+
+```{r}
+ml <- glm(mpg ~ disp + qsec, family = "gaussian", 
+          data = mtcars)
+ml2 <- glm(mpg ~ disp, family = "gaussian", 
+           data = mtcars)
+```
+
+### 結果の表示
+
+jtoolsパッケージのsumm()関数を利用して結果を確認する.
+
+```{r}
+library(jtools)
+summ(ml)
+```
+
+### 日本語の表
+
+日本語の表を書き出すには, gtsummaryパッケージが便利.
+はじめにいくつか設定を行う.
+
+```{r}
+install.packages("gtsummary")
+library(gtsummary)
+theme_gtsummary_language(language = "ja")
+theme_gtsummary_printer(print_engine = "kable")
+gtsummary::tbl_regression(ml,
+                          intercept = TRUE,
+                          label = list(disp ~ "燃費",
+                                       qsec ~ "タイム"))
+```
+
+### 結果を論文に掲載する
+
+結果を論文に掲載できるようにきれいに整形するにはstargazerパッケージを利用するのが便利.
+様々な引数があるので, 使いこなすにはHELPを参照.
+star.cutoffs = NA, omit.table.layout = "n"は忘れない.
+分析がしたいのであって, 天体観測がしたいわけではないことに注意.
+
+```{r}
+install.packages("stargazer")
+library(stargazer)
+stargazer::stargazer(ml,
+                     type = "text",
+                     style = "all", 
+                     ci = TRUE,
+                     star.cutoffs = NA, 
+                     omit.table.layout = 'n',
+                     align = TRUE)
+```
+
+### 複数の分析結果を並べる
+
+複数の分析結果を並べるのにもstargazerは有用.
+
+```{r}
+stargazer(ml, ml2,
+          type = "text",
+          style = "all", 
+          ci = TRUE,
+          star.cutoffs = NA, 
+          omit.table.layout = 'n',
+          align = TRUE)
+```
+
+### 結果の図示
+
+回帰分析の結果は表だけでなく, グラフ化するとわかりやすい.
+結果のグラフ化にはcoefplotパッケージのcoefplot()関数が便利.
+
+```{r}
+install.packages("coefplot")
+library(coefplot)
+coefplot(ml)
+```
+
+### 結果の図示2
+
+定数項は基準が違うために一緒にプロットすると見づらい場合がある.
+intercept = FALSEを引数に入れれば定数項を表示しない.
+
+
+```{r}
+coefplot(ml,
+         intercept = FALSE)
+```
+
+### 複数のモデルを比較
+
+複数のモデルをグラフを用いて比較するには, coefplotパッケージのmultiplot()関数が便利.
+
+```{r}
+multiplot(ml, ml2,
+          intercept = FALSE)
+```
+
+### 標準回帰係数のプロット
+
+標準回帰係数へはarmパッケージのstandardize(standardize.y = TRUE)で変換できる.
+
+```{r}
+coefplot(
+  arm::standardize(ml,
+                   standardize.y = TRUE))
+```
+
+### 標準回帰係数のマルチプロット
+
+標準回帰係数へはarmパッケージのstandardize(standardize.y = TRUE)で変換すれば, マルチプロットもできる.
+
+```{r}
+multiplot(
+  arm::standardize(ml,
+                   standardize.y = TRUE),
+  arm::standardize(ml2,
+                   standardize.y = TRUE),
+  names = c("model1", "model2"))
+```

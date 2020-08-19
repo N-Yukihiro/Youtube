@@ -1,0 +1,190 @@
+---
+title: "回帰分析"
+subtitle: "予測"
+output: html_notebook
+---
+
+### 利用するデータ
+
+本日利用するデータはmtcarsデータ.
+燃費(mpg)を応答変数に排気量(disp)を説明変数とする.
+
+```{r}
+str(mtcars)
+```
+
+### 回帰分析
+
+予測のための土台として回帰分析を行う.
+最小二乗法でも最尤法でも構わない.
+線形回帰分析の場合には最尤法だと一部動かないパッケージもあるので注意.
+簡単のため, 単回帰で行うが重回帰でも問題なく予測できる.
+
+```{r}
+ols <- lm(mpg ~ disp,
+          data = mtcars)
+ml <- glm(mpg ~ disp, family = "gaussian",
+          data = mtcars)
+```
+
+
+### 既存データの当てはめ
+
+既存のデータで予測を行うためには, predict()関数を利用する.
+
+
+```{r}
+predict(ols)
+```
+
+### 予測区間の表示
+
+予測区間を求めるには, 引数にinterval = "prediction"を追加する.
+最尤法だとうまく動かない.
+
+```{r}
+predict(ols, interval = "prediction")
+```
+
+### 新しいデータの作成
+
+データを予測するため, まずは新しい説明変数のデータセットを作成する.
+データの列名は分析に利用したものと同じ名前, 同じ列数である必要性がある.
+
+```{r}
+new_dat <- data.frame(
+  disp = seq(from = 50,
+             to = 500,
+             length.out = 19)
+)
+```
+
+### 新しいデータに対する予測
+
+新しいデータに対する予測をするには, 引数にnewdata = オブジェクト名とする.
+利用した説明変数はすべて揃っていることが前提.
+
+
+```{r}
+pred <- predict(ols, newdata = new_dat, 
+                interval = "prediction")
+pred
+```
+
+### 予測区間
+
+定義に従って予測区間を計算する.
+
+```{r}
+library(magrittr)
+pre_u <- pred[,1] %>%
+  subtract(
+    multiply_by(qt(p = 0.975,
+                   df = 30),
+                multiply_by(divide_by(ml$residuals %>%
+                                        raise_to_power(2) %>%  
+                                        sum(),
+                                      30) %>% sqrt(),
+                            add(32^(-1),
+                                divide_by(subtract(new_dat$disp,
+                                                   mtcars$disp %>% mean()) %>%
+                                            raise_to_power(2),
+                                          subtract(mtcars$disp,
+                                                   mtcars$disp %>% mean()) %>%
+                                            raise_to_power(2) %>% 
+                                            sum())) %>%
+                              add(1) %>% sqrt())))
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(pred[, 2],
+          pre_u)
+```
+
+### 最尤推定と予測
+
+最尤推定の結果を用いてデータを予測するためには, ciToolsパッケージのadd_pi()関数を利用するのがおすすめ.
+最尤推定法を用いた場合も問題なく予測区間が計算できる.
+tbに新しい説明変数のデータフレーム, fitに分析の結果のオブジェクト, alphaに$100(1 - \alpha)\%$区間の$\alpha$の値を指定する.
+
+add_ci()関数は回帰直線の信頼区間を示すのに後ほど利用する.
+
+```{r}
+library(ciTools)
+pred2 <- add_pi(tb = new_dat,
+                fit = ml,
+                alpha = 0.05)
+ci <- add_ci(tb = new_dat,
+             fit = ml,
+             alpha = 0.05)
+```
+
+### 予測区間の図示
+
+データの散布図に予測区間を図示する.
+
+```{r}
+library(ggplot2)
+ggplot() +
+  geom_point(
+    data = mtcars,
+    aes(x = disp,
+        y = mpg)) +
+  geom_smooth(
+    data = mtcars,
+    aes(x = disp,
+        y = mpg),
+    method = "lm",
+    se = FALSE) +
+  geom_ribbon(
+    data = pred2,
+    aes(x = disp,
+        ymin = LPB0.025,
+        ymax = UPB0.975),
+    fill = "lightblue",
+    alpha = 0.5
+  )
+```
+
+### geom_smooth()と区間
+
+geom_smooth()関数を利用するとデフォルトでは回帰直線とともに, 区間が表示されている.
+これは回帰直線の信頼区間.
+
+```{r}
+ggplot(data = mtcars) +
+  aes(x = disp,
+      y = mpg) +
+  geom_point() +
+  geom_smooth(
+    method = "lm"
+  )
+```
+
+### 回帰直線の信頼区間
+
+add_ci()関数で推定した値とgeom_smooth(se = TRUE)は一致する.
+
+```{r}
+ggplot() +
+  geom_point(
+    data = mtcars,
+    aes(x = disp,
+        y = mpg)) +
+  geom_smooth(
+    data = mtcars,
+    aes(x = disp,
+        y = mpg),
+    method = "lm",
+    se = TRUE) +
+  geom_ribbon(
+    data = ci,
+    aes(x = disp,
+        ymin = LCB0.025,
+        ymax = UCB0.975),
+    fill = "lightblue",
+    alpha = 0.5
+  )
+```

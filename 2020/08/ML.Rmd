@@ -1,0 +1,165 @@
+---
+title: "最尤推定法"
+output: html_notebook
+---
+
+### 利用するデータ
+
+本日利用するデータはmtcarsデータ.
+燃費(mpg)を応答変数に排気量(disp)やレースタイム(qsec)を説明変数とする.
+
+```{r}
+str(mtcars)
+```
+
+### 最尤推定
+
+最尤推定法を利用するには, glm()関数を利用する.
+確率密度関数の分布族として正規分布(ガウス分布)を利用することをfamily = "gaussian"で宣言する.
+
+```{r}
+ml <- glm(mpg ~ disp + qsec, family = "gaussian", 
+          data = mtcars)
+library(jtools)
+summ(ml)
+```
+
+### 最尤推定法と最小二乗法
+
+線形回帰分析の場合, 最尤推定法を用いた場合も最小二乗法を用いた場合も推定値は一致する.
+
+```{r}
+ols <- lm(mpg ~ disp + qsec,
+          data = mtcars)
+all.equal(ml$coefficients,
+          ols$coefficients)
+```
+
+### 対数尤度関数の実装
+  
+対数尤度関数の定義式に則ってコーディングする.
+
+```{r}
+library(magrittr)
+f <- function(b){
+  n <- nrow(mtcars)
+  multiply_by(-1,
+              divide_by(n, 2) %>% 
+                multiply_by(multiply_by(2, pi) %>% log())) %>% 
+    subtract(divide_by(n, 2) %>% 
+               multiply_by(b[4] %>% log())) %>% 
+    subtract(divide_by(subtract(mtcars$mpg,
+                                b[1]) %>% 
+                         subtract(multiply_by(b[2],
+                                              mtcars$disp)) %>%
+                         subtract(multiply_by(b[3],
+                                              mtcars$qsec)) %>% 
+                         raise_to_power(2) %>% 
+                         sum(),
+                       multiply_by(2, b[4])))
+}
+```
+
+### 対数尤度関数の最大化
+
+optim()関数はデフォルトでは関数の最小化を行うため, 最大化をするためにcontrol = list(fnscale = -1)を引数に加える.
+
+```{r}
+op <- optim(c(1, 1, 1, 1), f, 
+            control = list(fnscale = -1),
+            method = "BFGS")
+op
+```
+
+### MODEL FITの準備
+
+MODEL FITの計算の準備のため, 定数項のみ(すべての係数が0であり, 定数項は応答変数の平均)の回帰分析を行う.
+
+```{r}
+ml0 <- glm(mpg ~ 1, family = "gaussian",
+           data = mtcars)
+```
+
+### $\chi^2$検定
+
+$\chi^2$検定は分散分析を行っている.
+
+```{r}
+anova(ml0, ml, test = "Chisq")
+```
+
+### Cragg-Uhler型の擬似決定係数(補正後)
+  
+Cragg-Uhler型の擬似決定係数(補正後)を定義に従いコーディングする.
+
+```{r}
+r_cu <- subtract(1,
+                 divide_by(logLik(ml0) %>% 
+                             as.numeric() %>%
+                             exp(),
+                           logLik(ml) %>% 
+                             as.numeric() %>% 
+                             exp()) %>%
+                   raise_to_power(divide_by(2,
+                                            mtcars %>% 
+                                              nrow()))) %>% 
+  divide_by(subtract(1,
+                     logLik(ml0) %>% 
+                       as.numeric() %>%
+                       exp() %>% 
+                       raise_to_power(divide_by(2,
+                                                mtcars %>% 
+                                                  nrow()))))
+r_cu
+```
+
+### 擬似決定係数(Pseudo-R² (McFadden))
+
+McFadden型の擬似決定係数を定義に従いコーディングする.
+
+```{r}
+r_mc <- subtract(1,
+                 divide_by(logLik(ml) %>% 
+                             as.numeric(),
+                           logLik(ml0) %>% 
+                             as.numeric()))
+r_mc
+```
+
+### AIC
+  
+AICを定義に則って計算する.
+
+```{r}
+aic <- multiply_by(-2,
+                   logLik(ml) %>% as.numeric()) %>% 
+  add(multiply_by(2, 
+                  op$par %>% length()))
+aic
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(ml %>% AIC(),
+          aic)
+```
+
+### BIC
+
+BICを定義に則って計算する.
+
+```{r}
+bic <- multiply_by(-2,
+                   logLik(ml) %>% as.numeric()) %>% 
+  add(multiply_by(op$par %>% length(),
+                  mtcars %>% nrow() %>% log()))
+bic
+```
+
+実際に関数を用いて計算した結果と一致するか確認.
+
+```{r}
+all.equal(ml %>% BIC(),
+          bic)
+```
