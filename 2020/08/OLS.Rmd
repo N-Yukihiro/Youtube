@@ -385,7 +385,7 @@ summ(ols2, digits = 4)
 ダミー変数と単回帰分析の定数項はダミー変数が0の時の応答変数の平均と一致し, 回帰係数は平均の差と一致する.
 
 ```{r}
-d <dat %>% 
+d <- dat %>% 
   group_by(am) %>% 
   summarise(mean = mean(mpg), .groups = "drop") %>% 
   mutate(diff = lead(mean) - mean)
